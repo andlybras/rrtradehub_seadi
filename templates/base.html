@@ -141,7 +141,7 @@
     </main>
 
     <!-- Carrossel de Parceiros -->
-    <div class="py-20 mt-0">
+    <div class="py-6 mt-0">
         <!-- O JS adicionará o atributo data-animated="true" a este elemento para iniciar a animação -->
         <div class="scroller w-full overflow-hidden py-4 [mask-image:_linear_gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
             <div class="scroller-inner">
@@ -162,42 +162,61 @@
     {% block extra_js %}{% endblock %}
 
     <script>
-        // Lógica para mudar o fundo do header ao rolar a página
-        const header = document.getElementById('main-header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('bg-primary', 'shadow-lg');
-            } else {
-                header.classList.remove('bg-primary', 'shadow-lg');
-            }
-        });
+    // Lógica para mudar o fundo do header ao rolar a página
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('bg-primary', 'shadow-lg');
+        } else {
+            header.classList.remove('bg-primary', 'shadow-lg');
+        }
+    });
 
-        // SCRIPT ATUALIZADO: Lógica para duplicar os logos e garantir o loop infinito
-        document.addEventListener('DOMContentLoaded', () => {
-            const scroller = document.querySelector('.scroller');
+    // SCRIPT NOVO E MELHORADO: Lógica de clonagem dinâmica para o carrossel infinito
+    document.addEventListener('DOMContentLoaded', () => {
+        const scroller = document.querySelector('.scroller');
+        
+        if (scroller) {
+            const scrollerInner = scroller.querySelector('.scroller-inner');
             
-            // Verifica se o elemento scroller existe
-            if (scroller) {
-                const scrollerInner = scroller.querySelector('.scroller-inner');
-                
-                // Verifica se o container interno existe e tem logos para duplicar
-                if (scrollerInner && scrollerInner.children.length > 0) {
-                    const scrollerContent = Array.from(scrollerInner.children);
+            // Se não houver logos, o script para aqui.
+            if (!scrollerInner || scrollerInner.children.length === 0) {
+                return;
+            }
 
-                    // Duplica cada item e anexa ao final para criar o loop
+            const scrollerContent = Array.from(scrollerInner.children);
+            const scrollerWidth = scroller.offsetWidth;
+            const contentWidth = scrollerInner.offsetWidth;
+
+            // Condição: Se a largura do conteúdo original for menor que a área visível...
+            if (contentWidth < scrollerWidth) {
+                // ...calculamos quantas cópias são necessárias para preencher a tela.
+                const clonesNeeded = Math.ceil(scrollerWidth / contentWidth);
+                
+                // Duplicamos o conteúdo o número de vezes necessário (com uma cópia extra por segurança).
+                for (let i = 0; i < clonesNeeded; i++) {
                     scrollerContent.forEach(item => {
                         const duplicatedItem = item.cloneNode(true);
                         duplicatedItem.setAttribute('aria-hidden', true);
                         scrollerInner.appendChild(duplicatedItem);
                     });
-
-                    // Adiciona o atributo para iniciar a animação CSS de forma segura.
-                    // Isso garante que a animação só comece depois que o DOM for duplicado
-                    // e o browser tenha calculado a largura final correta.
-                    scroller.setAttribute('data-animated', true);
                 }
             }
-        });
-    </script>
+            
+            // E então, duplicamos TUDO mais uma vez para garantir o espaço para a animação.
+            // Isso garante que, quando o primeiro bloco sair, a cópia idêntica estará pronta para entrar.
+            const finalContent = Array.from(scrollerInner.children);
+            finalContent.forEach(item => {
+                const duplicatedItem = item.cloneNode(true);
+                duplicatedItem.setAttribute('aria-hidden', true);
+                scrollerInner.appendChild(duplicatedItem);
+            });
+
+
+            // Só então ativamos a animação.
+            scroller.setAttribute('data-animated', true);
+        }
+    });
+</script>
 </body>
 </html>
