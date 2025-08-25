@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Empresa{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <h2 class="text-3xl font-bold text-center text-secondary mb-8">Dados da sua Empresa</h2>
+    <p class="text-center text-gray-600 mb-8">Preencha as informações abaixo. Após o envio, seus dados passarão por uma análise.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="space-y-6">
+            <!-- Dados Empresariais -->
+            <fieldset class="border p-6 rounded-lg">
+                <legend class="text-xl font-semibold px-2 text-secondary">Dados Empresariais</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>{{ form.razao_social.label_tag }} {{ form.razao_social }}</div>
+                    <div>{{ form.nome_fantasia.label_tag }} {{ form.nome_fantasia }}</div>
+                    <div>{{ form.cnpj.label_tag }} {{ form.cnpj }}</div>
+                    <div>{{ form.inscricao_estadual.label_tag }} {{ form.inscricao_estadual }}</div>
+                    <div>{{ form.institutional_contact.label_tag }} {{ form.institutional_contact }}</div>
+                    <div>{{ form.institutional_email.label_tag }} {{ form.institutional_email }}</div>
+                    <div class="md:col-span-2">{{ form.address.label_tag }} {{ form.address }}</div>
+                    <div class="md:col-span-2">{{ form.logo.label_tag }} {{ form.logo }}</div>
+                </div>
+            </fieldset>
+
+            <!-- Atividades (CNAE) -->
+            <fieldset class="border p-6 rounded-lg">
+                <legend class="text-xl font-semibold px-2 text-secondary">Atividades (CNAE)</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>{{ form.main_activity.label_tag }} {{ form.main_activity }}</div>
+                    <div>{{ form.secondary_activities.label_tag }} {{ form.secondary_activities }}</div>
+                </div>
+            </fieldset>
+
+            <!-- Dados do Responsável -->
+            <fieldset class="border p-6 rounded-lg">
+                <legend class="text-xl font-semibold px-2 text-secondary">Dados do Responsável Legal</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>{{ form.legal_rep_name.label_tag }} {{ form.legal_rep_name }}</div>
+                    <div>{{ form.legal_rep_role.label_tag }} {{ form.legal_rep_role }}</div>
+                    <div>{{ form.legal_rep_contact.label_tag }} {{ form.legal_rep_contact }}</div>
+                    <div>{{ form.legal_rep_email.label_tag }} {{ form.legal_rep_email }}</div>
+                </div>
+            </fieldset>
+        </div>
+
+        <button type="submit" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300">
+            Enviar para Análise
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Estilos para os campos do formulário */
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #455A64;
+    }
+    input[type="text"], input[type="email"], select, textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background-color: #F9FAFB;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #41A2C5;
+        box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3);
+        background-color: white;
+    }
+</style>
+{% endblock %}

@@ -90,3 +90,7 @@ AUTH_USER_MODEL = 'user_management.CustomUser'
 LOGIN_REDIRECT_URL = 'user_management:dashboard' 
 
 LOGOUT_REDIRECT_URL = 'home'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
