@@ -8,37 +8,59 @@
 
     <form method="POST" id="registrationForm" novalidate>
         {% csrf_token %}
+
+        <!-- Bloco para exibir erros gerais do formulário (ex: usuário já existe) -->
+        {% if form.non_field_errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Razão Social -->
             <div>
                 <label for="id_razao_social" class="block mb-2 text-sm font-medium text-gray-700">Razão Social</label>
-                <input type="text" name="razao_social" id="id_razao_social" class="form-input" required>
+                <input type="text" name="razao_social" id="id_razao_social" class="form-input {% if form.razao_social.errors %}is-invalid{% endif %}" required value="{{ form.razao_social.value|default:'' }}">
+                {% for error in form.razao_social.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
             </div>
+            <!-- Nome Fantasia -->
             <div>
                 <label for="id_nome_fantasia" class="block mb-2 text-sm font-medium text-gray-700">Nome Fantasia</label>
-                <input type="text" name="nome_fantasia" id="id_nome_fantasia" class="form-input" required>
+                <input type="text" name="nome_fantasia" id="id_nome_fantasia" class="form-input {% if form.nome_fantasia.errors %}is-invalid{% endif %}" required value="{{ form.nome_fantasia.value|default:'' }}">
+                {% for error in form.nome_fantasia.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
             </div>
         </div>
+
+        <!-- CNPJ -->
         <div class="mb-6">
             <label for="id_cnpj" class="block mb-2 text-sm font-medium text-gray-700">CNPJ</label>
-            <input type="text" name="cnpj" id="id_cnpj" class="form-input" required placeholder="00.000.000/0000-00">
+            <input type="text" name="cnpj" id="id_cnpj" class="form-input {% if form.cnpj.errors %}is-invalid{% endif %}" required placeholder="00.000.000/0000-00" value="{{ form.cnpj.value|default:'' }}">
             <p id="cnpjError" class="error-message"></p>
+            {% for error in form.cnpj.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
+
+        <!-- Username -->
         <div class="mb-6">
             <label for="id_username" class="block mb-2 text-sm font-medium text-gray-700">Nome de Usuário</label>
-            <input type="text" name="username" id="id_username" class="form-input" required>
+            <input type="text" name="username" id="id_username" class="form-input {% if form.username.errors %}is-invalid{% endif %}" required value="{{ form.username.value|default:'' }}">
+            {% for error in form.username.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
 
         <!-- Email -->
         <div class="mb-6">
             <label for="id_email" class="block mb-2 text-sm font-medium text-gray-700">E-mail</label>
-            <input type="email" name="email" id="id_email" class="form-input" required>
+            <input type="email" name="email" id="id_email" class="form-input {% if form.email.errors %}is-invalid{% endif %}" required value="{{ form.email.value|default:'' }}">
             <p id="emailError" class="error-message"></p>
+            {% for error in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
+
+        <!-- Senha -->
         <div class="mb-6">
             <label for="id_password1" class="block mb-2 text-sm font-medium text-gray-700">Senha</label>
             <div class="relative">
-                <input type="password" name="password" id="id_password1" class="form-input pr-10" required>
+                <input type="password" name="password" id="id_password1" class="form-input pr-10 {% if form.password.errors %}is-invalid{% endif %}" required>
                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onclick="togglePassword('id_password1')">
                     <svg id="eye-icon-1" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                 </span>
@@ -49,17 +71,22 @@
                 <p id="req-number">Números (0-9)</p>
                 <p id="req-special">Caractere especial (!, @, #, etc.)</p>
             </div>
+             {% for error in form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
+
+        <!-- Confirmação de Senha -->
         <div class="mb-8">
             <label for="id_password2" class="block mb-2 text-sm font-medium text-gray-700">Confirme a Senha</label>
             <div class="relative">
-                <input type="password" name="password_confirmation" id="id_password2" class="form-input pr-10" required>
+                <input type="password" name="password2" id="id_password2" class="form-input pr-10 {% if form.password2.errors %}is-invalid{% endif %}" required>
                  <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onclick="togglePassword('id_password2')">
                     <svg id="eye-icon-2" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                 </span>
             </div>
             <p id="confirmError" class="error-message"></p>
+            {% for error in form.password2.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
+
         <button type="submit" id="submitButton" class="w-full bg-accent text-secondary font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300" disabled>
             Criar Conta
         </button>
