@@ -1,0 +1,50 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="space-y-6">
+        <fieldset class="border p-6 rounded-lg">
+            <legend class="text-xl font-semibold px-2 text-secondary">Dados Empresariais</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                {% if not edit_mode %}
+                    <div>{{ form.razao_social.label_tag }} {{ form.razao_social }}</div>
+                    <div>{{ form.nome_fantasia.label_tag }} {{ form.nome_fantasia }}</div>
+                    <div>{{ form.cnpj.label_tag }} {{ form.cnpj }}</div>
+                {% endif %}
+                <div>{{ form.inscricao_estadual.label_tag }} {{ form.inscricao_estadual }}</div>
+                <div>{{ form.institutional_contact.label_tag }} {{ form.institutional_contact }}</div>
+                <div>{{ form.institutional_email.label_tag }} {{ form.institutional_email }}</div>
+                <div class="md:col-span-2">{{ form.address.label_tag }} {{ form.address }}</div>
+                <div class="md:col-span-2">{{ form.logo.label_tag }} {{ form.logo }}</div>
+            </div>
+        </fieldset>
+        <fieldset class="border p-6 rounded-lg">
+            <legend class="text-xl font-semibold px-2 text-secondary">Atividades (CNAE)</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="relative">
+                    <label for="main_activity_search">Atividade Principal (CNAE)</label>
+                    {{ form.main_activity }}
+                    <input type="text" id="main_activity_search" placeholder="Digite o código ou descrição..." class="form-input">
+                    <div id="main_activity_results" class="cnae-results"></div>
+                </div>
+                <div class="relative">
+                    <label for="secondary_activities_search">Atividades Secundárias (CNAE)</label>
+                    <div id="secondary-hidden-inputs" style="display:none;">{{ form.secondary_activities }}</div>
+                    <input type="text" id="secondary_activities_search" placeholder="Digite para adicionar..." class="form-input">
+                    <div id="secondary_activities_results" class="cnae-results"></div>
+                    <div id="secondary_activities_selected" class="mt-2 space-y-2"></div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="border p-6 rounded-lg">
+            <legend class="text-xl font-semibold px-2 text-secondary">Dados do Responsável Legal/Delegado</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>{{ form.legal_rep_name.label_tag }} {{ form.legal_rep_name }}</div>
+                <div>{{ form.legal_rep_role.label_tag }} {{ form.legal_rep_role }}</div>
+                <div>{{ form.legal_rep_contact.label_tag }} {{ form.legal_rep_contact }}</div>
+                <div>{{ form.legal_rep_email.label_tag }} {{ form.legal_rep_email }}</div>
+            </div>
+        </fieldset>
+    </div>
+    <button type="submit" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg">
+        {% if edit_mode %}Solicitar Alteração{% else %}Enviar para Análise{% endif %}
+    </button>
+</form>

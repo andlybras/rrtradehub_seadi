@@ -19,32 +19,18 @@ class Company(models.Model):
         ACTIVE = 'ACTIVE', 'Ativa'
         REJECTED = 'REJECTED', 'Recusada'
 
-    owner = models.ForeignKey(
+    owner = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='companies',
-        verbose_name='Proprietário (Perfil Empresarial)',
-        limit_choices_to={'user_type': 'BUSINESS'}
+        related_name='company',
+        verbose_name='Proprietário (Perfil Empresarial)'
     )
     razao_social = models.CharField(max_length=255, verbose_name='Razão Social')
     nome_fantasia = models.CharField(max_length=255, verbose_name='Nome Fantasia')
     cnpj = models.CharField(max_length=18, unique=True, verbose_name='CNPJ')
     inscricao_estadual = models.CharField(max_length=20, blank=True, null=True, verbose_name='Inscrição Estadual')
-    
-    main_activity = models.ForeignKey(
-        CNAE,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='main_activity_companies',
-        verbose_name='Atividade Principal (CNAE)'
-    )
-    secondary_activities = models.ManyToManyField(
-        CNAE,
-        related_name='secondary_activity_companies',
-        blank=True,
-        verbose_name='Atividades Secundárias (CNAE)'
-    )
-    
+    main_activity = models.ForeignKey(CNAE, on_delete=models.SET_NULL, null=True, related_name='main_activity_companies', verbose_name='Atividade Principal (CNAE)')
+    secondary_activities = models.ManyToManyField(CNAE, related_name='secondary_activity_companies', blank=True, verbose_name='Atividades Secundárias (CNAE)')
     institutional_contact = models.CharField(max_length=20, blank=True, null=True, verbose_name='Contato Institucional')
     institutional_email = models.EmailField(blank=True, null=True, verbose_name='E-mail Institucional')
     address = models.TextField(verbose_name='Endereço Principal')
@@ -53,14 +39,8 @@ class Company(models.Model):
     legal_rep_role = models.CharField(max_length=100, verbose_name='Cargo/Função')
     legal_rep_contact = models.CharField(max_length=20, verbose_name='Contato Direto/WhatsApp')
     legal_rep_email = models.EmailField(verbose_name='Email do Responsável')
-    status = models.CharField(
-        max_length=10,
-        choices=Status.choices,
-        default=Status.REVIEW,
-        verbose_name='Status'
-    )
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.REVIEW, verbose_name='Status')
     moderation_notes = models.TextField(blank=True, null=True, verbose_name='Justificativa/Notas de Moderação')
-    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -70,3 +50,24 @@ class Company(models.Model):
     class Meta:
         verbose_name = 'Empresa'
         verbose_name_plural = 'Gerenciamento de Empresas'
+
+class ChangeRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pendente'
+        APPROVED = 'APPROVED', 'Aprovada'
+        REJECTED = 'REJECTED', 'Rejeitada'
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='change_requests', verbose_name='Empresa')
+    requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Solicitante')
+    requested_changes = models.JSONField(verbose_name='Dados Solicitados')
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING, verbose_name='Status da Solicitação')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Data da Solicitação')
+    moderated_at = models.DateTimeField(null=True, blank=True, verbose_name='Data da Moderação')
+    moderator_notes = models.TextField(blank=True, null=True, verbose_name='Notas do Moderador')
+
+    def __str__(self):
+        return f"Solicitação de {self.company.nome_fantasia} em {self.created_at.strftime('%d/%m/%Y')}"
+
+    class Meta:
+        verbose_name = 'Solicitação de Alteração'
+        verbose_name_plural = 'Solicitações de Alteração'

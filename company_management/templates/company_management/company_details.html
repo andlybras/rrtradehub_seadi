@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Dados da Empresa{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    
+    {% if not company %}
+        <!-- Formulário de Criação -->
+        <h2 class="text-3xl font-bold text-center text-secondary mb-8">Cadastrar sua Empresa</h2>
+        <p class="text-center text-gray-600 mb-8">Preencha as informações abaixo. Após o envio, seus dados passarão por uma análise.</p>
+        {% include 'company_management/company_form.html' %}
+    
+    {% elif edit_mode %}
+        <!-- Formulário de Edição -->
+        <h2 class="text-3xl font-bold text-center text-secondary mb-8">Solicitar Alteração de Dados</h2>
+        <p class="text-center text-gray-600 mb-8">Modifique os campos desejados. Sua solicitação será enviada para análise.</p>
+        {% include 'company_management/company_form.html' %}
+
+    {% else %}
+        <!-- Modo de Visualização -->
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-secondary">Dados da sua Empresa</h2>
+            {% if company.status == 'ACTIVE' %}
+            <a href="?edit=true" class="bg-accent text-secondary font-bold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity">
+                Solicitar Alteração
+            </a>
+            {% endif %}
+        </div>
+        
+        <div class="space-y-4">
+            <p><strong>Status:</strong> {{ company.get_status_display }}</p>
+            <p><strong>Razão Social:</strong> {{ company.razao_social }}</p>
+            <p><strong>Nome Fantasia:</strong> {{ company.nome_fantasia }}</p>
+            <p><strong>CNPJ:</strong> {{ company.cnpj }}</p>
+        </div>
+
+        <div class="mt-8 border-t pt-6">
+            <h3 class="text-xl font-semibold text-secondary mb-4">Histórico de Solicitações</h3>
+            {% for req in company.change_requests.all %}
+                <div class="p-4 mb-2 border rounded-lg">
+                    <p><strong>Data:</strong> {{ req.created_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Status:</strong> {{ req.get_status_display }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500">Nenhuma solicitação de alteração encontrada.</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
