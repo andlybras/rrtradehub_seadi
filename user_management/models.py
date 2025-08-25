@@ -1,6 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.apps import apps
 
 class CustomUser(AbstractUser):
     class UserType(models.TextChoices):
@@ -14,6 +16,29 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        # Salva o usuário primeiro para garantir que ele tenha um ID
+        super().save(*args, **kwargs)
+
+        # Se for um Permissionário, sincroniza as permissões
+        if self.user_type == self.UserType.LICENSEE and self.is_staff:
+            self.user_permissions.clear()
+            permissions_to_add = set()
+            
+            for app_permission_group in self.app_permissions.all():
+                for module_name in app_permission_group.get_responsible_modules_list():
+                    try:
+                        app_models = apps.get_app_config(module_name).get_models()
+                        for model in app_models:
+                            content_type = ContentType.objects.get_for_model(model)
+                            permissions = Permission.objects.filter(content_type=content_type)
+                            permissions_to_add.update(permissions)
+                    except (LookupError, AttributeError):
+                        continue # Ignora se o app não for encontrado
+            
+            if permissions_to_add:
+                self.user_permissions.add(*permissions_to_add)
 
 class UserChangeRequest(models.Model):
     class Status(models.TextChoices):
