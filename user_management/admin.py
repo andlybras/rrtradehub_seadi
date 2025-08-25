@@ -1,11 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.forms import ModelForm, CheckboxSelectMultiple
+from django.forms import ModelForm, MultipleChoiceField, CheckboxSelectMultiple
 from django.apps import apps
 from .models import CustomUser, AppModulePermission
 
 class AppModulePermissionAdminForm(ModelForm):
-
     class Meta:
         model = AppModulePermission
         fields = '__all__'
@@ -19,7 +18,7 @@ class AppModulePermissionAdminForm(ModelForm):
         ]
         choices = [(label, label) for label in app_labels]
         
-        self.fields['responsible_modules'] = admin.widgets.forms.MultipleChoiceField(
+        self.fields['responsible_modules'] = MultipleChoiceField(
             choices=choices,
             widget=CheckboxSelectMultiple,
             label='Módulo(s) de Responsabilidade',
@@ -46,23 +45,30 @@ class AppModulePermissionAdmin(admin.ModelAdmin):
 
 @admin.register(CustomUser)
 class CustomUserAdmin(BaseUserAdmin):
-    
     model = CustomUser
+    
+    list_display = ('username', 'email', 'nome_fantasia', 'user_type', 'is_staff')
+    
+    search_fields = ('username', 'email', 'nome_fantasia', 'cnpj')
+    
+    list_filter = ('user_type', 'is_staff', 'is_superuser', 'is_active')
+
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Informações Pessoais', {'fields': ('first_name', 'last_name', 'email')}),
-        ('Tipo de Usuário e Status', {'fields': ('user_type', 'is_active', 'is_staff', 'is_superuser')}),
+        
+        ('Informações Principais', {'fields': ('email', 'user_type')}),
+        
         ('Dados do Perfil Empresarial', {
             'fields': ('razao_social', 'nome_fantasia', 'cnpj'),
             'classes': ('collapse', 'business-fields')
         }),
-        ('Permissões', {'fields': ('groups', 'user_permissions')}),
+        
+        ('Permissões', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        
         ('Datas Importantes', {'fields': ('last_login', 'date_joined')}),
     )
-    
-    list_display = ('username', 'email', 'user_type', 'is_staff')
-    list_filter = ('user_type', 'is_staff', 'is_superuser', 'is_active')
-    search_fields = ('username', 'first_name', 'last_name', 'email', 'cnpj')
 
     class Media:
         js = ('//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js', 'js/admin_user_toggle.js',)
