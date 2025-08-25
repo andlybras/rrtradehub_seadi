@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Resultados da Busca{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-secondary mb-2 font-title">Empresas que oferecem:</h1>
+    <p class="text-xl text-primary font-semibold mb-8">{{ product.title }}</p>
+
+    <div class="space-y-6">
+        {% for company in companies %}
+            <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold font-title text-secondary">{{ company.nome_fantasia }}</h2>
+                    <p class="text-gray-600">{{ company.main_activity.description }}</p>
+                </div>
+                <a href="{% url 'showcase_public:public_company_profile' company.pk %}?produto={{ product.pk }}" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:opacity-90">
+                    Ver Vitrine
+                </a>
+            </div>
+        {% empty %}
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <p class="text-gray-600">Nenhuma empresa encontrada para este produto.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

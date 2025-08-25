@@ -9,7 +9,8 @@ urlpatterns = [
     path('', user_views.home_page, name='home'),
     path('contas/', include('user_management.urls')),
     path('empresa/', include('company_management.urls')),
-    path('painel/', include('showcase_management.urls')), # Adicione esta linha
+    path('painel/', include('showcase_management.urls')),
+    path('quero-comprar/', include('showcase_management.public_urls')),
 ]
 
 if settings.DEBUG:

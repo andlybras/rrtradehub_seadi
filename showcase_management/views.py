@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.urls import reverse
-from .models import Product, ProductImage, NCMSubitem
+from django.http import JsonResponse
+from .models import Product, ProductImage, NCMSubitem, NCMChapter, NCMPosition, Company
 from .forms import ProductForm
 import json
 
@@ -74,3 +74,65 @@ def product_delete(request, pk):
         messages.success(request, "Produto excluído com sucesso.")
         return redirect('showcase_management:product_list')
     return render(request, 'showcase_management/product_confirm_delete.html', {'product': product})
+
+def search_page(request):
+    # Filtra apenas capítulos que têm produtos ativos de empresas ativas
+    active_chapters = NCMChapter.objects.filter(
+        positions__subitems__products__is_active=True,
+        positions__subitems__products__company__status=Company.Status.ACTIVE
+    ).distinct()
+    
+    context = {
+        'chapters': active_chapters,
+    }
+    return render(request, 'showcase_management/search_page.html', context)
+
+def search_results(request):
+    product_id = request.GET.get('product')
+    if not product_id:
+        return redirect('showcase_public:search_page')
+
+    product = get_object_or_404(Product, pk=product_id)
+    # Encontra todas as empresas ativas que vendem este produto
+    companies = Company.objects.filter(
+        status=Company.Status.ACTIVE,
+        products__id=product_id
+    ).distinct()
+
+    context = {
+        'product': product,
+        'companies': companies,
+    }
+    return render(request, 'showcase_management/search_results.html', context)
+
+def public_company_profile(request, pk):
+    company = get_object_or_404(Company, pk=pk, status=Company.Status.ACTIVE)
+    highlight_product_id = request.GET.get('produto')
+    
+    context = {
+        'company': company,
+        'highlight_product_id': int(highlight_product_id) if highlight_product_id else None,
+    }
+    return render(request, 'showcase_management/public_company_profile.html', context)
+
+# --- Endpoints para AJAX ---
+
+def load_positions(request):
+    chapter_id = request.GET.get('chapter_id')
+    # Filtra posições que têm produtos ativos de empresas ativas
+    positions = list(NCMPosition.objects.filter(
+        chapter_id=chapter_id,
+        subitems__products__is_active=True,
+        subitems__products__company__status=Company.Status.ACTIVE
+    ).distinct().values('id', 'code', 'description'))
+    return JsonResponse(positions, safe=False)
+
+def load_products(request):
+    position_id = request.GET.get('position_id')
+    # Filtra produtos ativos de empresas ativas
+    products = list(Product.objects.filter(
+        ncm_subitem__position_id=position_id,
+        is_active=True,
+        company__status=Company.Status.ACTIVE
+    ).distinct().values('id', 'title'))
+    return JsonResponse(products, safe=False)

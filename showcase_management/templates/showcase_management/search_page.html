@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Quero Comprar{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <h1 class="text-4xl font-bold text-center text-secondary mb-2 font-title">Encontre o que você precisa</h1>
+    <p class="text-center text-gray-600 mb-8">Selecione a área, setor e produto para encontrar as melhores empresas.</p>
+
+    <form id="searchForm" action="{% url 'showcase_public:search_results' %}" method="GET">
+        <div class="space-y-6">
+            <!-- Área (Capítulo) -->
+            <div>
+                <label for="chapter" class="block text-lg font-medium text-gray-700">Área</label>
+                <select name="chapter" id="chapter" class="form-input">
+                    <option value="">Selecione uma área...</option>
+                    {% for chapter in chapters %}
+                        <option value="{{ chapter.id }}">{{ chapter.code }} - {{ chapter.description }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Setor (Posição) -->
+            <div>
+                <label for="position" class="block text-lg font-medium text-gray-700">Setor</label>
+                <select name="position" id="position" class="form-input" disabled>
+                    <option value="">Selecione um setor...</option>
+                </select>
+            </div>
+            <!-- Produto -->
+            <div>
+                <label for="product" class="block text-lg font-medium text-gray-700">Produto</label>
+                <select name="product" id="product" class="form-input" disabled>
+                    <option value="">Selecione um produto...</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" id="searchButton" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            Buscar Empresas
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chapterSelect = document.getElementById('chapter');
+    const positionSelect = document.getElementById('position');
+    const productSelect = document.getElementById('product');
+    const searchButton = document.getElementById('searchButton');
+
+    chapterSelect.addEventListener('change', () => {
+        const chapterId = chapterSelect.value;
+        positionSelect.innerHTML = '<option value="">Carregando...</option>';
+        productSelect.innerHTML = '<option value="">Selecione um produto...</option>';
+        positionSelect.disabled = true;
+        productSelect.disabled = true;
+        searchButton.disabled = true;
+
+        if (chapterId) {
+            fetch(`{% url 'showcase_public:ajax_load_positions' %}?chapter_id=${chapterId}`)
+                .then(response => response.json())
+                .then(data => {
+                    positionSelect.innerHTML = '<option value="">Selecione um setor...</option>';
+                    data.forEach(pos => {
+                        positionSelect.innerHTML += `<option value="${pos.id}">${pos.code} - ${pos.description}</option>`;
+                    });
+                    positionSelect.disabled = false;
+                });
+        }
+    });
+
+    positionSelect.addEventListener('change', () => {
+        const positionId = positionSelect.value;
+        productSelect.innerHTML = '<option value="">Carregando...</option>';
+        productSelect.disabled = true;
+        searchButton.disabled = true;
+
+        if (positionId) {
+            fetch(`{% url 'showcase_public:ajax_load_products' %}?position_id=${positionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    productSelect.innerHTML = '<option value="">Selecione um produto...</option>';
+                    data.forEach(prod => {
+                        productSelect.innerHTML += `<option value="${prod.id}">${prod.title}</option>`;
+                    });
+                    productSelect.disabled = false;
+                });
+        }
+    });
+
+    productSelect.addEventListener('change', () => {
+        searchButton.disabled = !productSelect.value;
+    });
+</script>
+{% endblock %}
