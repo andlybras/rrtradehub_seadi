@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import CNAE, Company, ChangeRequest
 
 @admin.register(CNAE)
@@ -18,7 +18,7 @@ class CompanyAdmin(admin.ModelAdmin):
     list_display = ('nome_fantasia', 'owner', 'status', 'created_at')
     list_filter = ('status',)
     search_fields = ('nome_fantasia', 'razao_social', 'cnpj', 'owner__username')
-    list_editable = ('status',)
+    
     fieldsets = (
         ('Dados do Proprietário', {'fields': ('owner',)}),
         ('Dados Empresariais', {'fields': ('razao_social', 'nome_fantasia', 'cnpj', 'inscricao_estadual', 'main_activity', 'secondary_activities', 'logo')}),
@@ -27,8 +27,15 @@ class CompanyAdmin(admin.ModelAdmin):
         ('Moderação', {'fields': ('status', 'moderation_notes')}),
     )
     filter_horizontal = ('secondary_activities',)
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'owner')
     inlines = [ChangeRequestInline]
+    
+    actions = ['approve_companies']
+
+    @admin.action(description='Aprovar empresas selecionadas')
+    def approve_companies(self, request, queryset):
+        updated = queryset.update(status=Company.Status.ACTIVE)
+        self.message_user(request, f'{updated} empresas foram aprovadas com sucesso.', messages.SUCCESS)
 
 @admin.register(ChangeRequest)
 class ChangeRequestAdmin(admin.ModelAdmin):
