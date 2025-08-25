@@ -5,13 +5,13 @@ class CompanyCreationForm(forms.ModelForm):
     main_activity = forms.ModelChoiceField(
         queryset=CNAE.objects.all(),
         label="Atividade Principal (CNAE)",
-        empty_label="Selecione uma atividade principal"
+        widget=forms.HiddenInput()
     )
     
     secondary_activities = forms.ModelMultipleChoiceField(
         queryset=CNAE.objects.all(),
         label="Atividades Secundárias (CNAE)",
-        widget=forms.SelectMultiple(attrs={'size': '10'}),
+        widget=forms.MultipleHiddenInput(),
         required=False
     )
 
@@ -26,13 +26,19 @@ class CompanyCreationForm(forms.ModelForm):
         labels = {
             'razao_social': 'Razão Social',
             'nome_fantasia': 'Nome Fantasia',
+            'cnpj': 'CNPJ',
             'inscricao_estadual': 'Inscrição Estadual',
             'institutional_contact': 'Contato Institucional',
             'institutional_email': 'E-mail Institucional',
             'address': 'Endereço Principal',
             'logo': 'Logotipo da Empresa',
-            'legal_rep_name': 'Nome Completo do Responsável',
-            'legal_rep_role': 'Cargo/Função do Responsável',
-            'legal_rep_contact': 'Contato Direto/WhatsApp do Responsável',
-            'legal_rep_email': 'Email do Responsável',
+            'legal_rep_name': 'Nome Completo',
+            'legal_rep_role': 'Cargo/Função',
+            'legal_rep_contact': 'Contato Direto/WhatsApp',
+            'legal_rep_email': 'Email',
+        }
+        widgets = {
+            'razao_social': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}),
+            'nome_fantasia': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}),
+            'cnpj': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}),
         }

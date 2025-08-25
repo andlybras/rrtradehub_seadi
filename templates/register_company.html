@@ -30,14 +30,29 @@
             <fieldset class="border p-6 rounded-lg">
                 <legend class="text-xl font-semibold px-2 text-secondary">Atividades (CNAE)</legend>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div>{{ form.main_activity.label_tag }} {{ form.main_activity }}</div>
-                    <div>{{ form.secondary_activities.label_tag }} {{ form.secondary_activities }}</div>
+                    <!-- Main Activity Search -->
+                    <div class="relative">
+                        <label for="main_activity_search">Atividade Principal (CNAE)</label>
+                        {{ form.main_activity }}
+                        <input type="text" id="main_activity_search" placeholder="Digite o código ou descrição..." class="form-input">
+                        <div id="main_activity_results" class="cnae-results"></div>
+                    </div>
+                    <!-- Secondary Activities Search -->
+                    <div class="relative">
+                        <label for="secondary_activities_search">Atividades Secundárias (CNAE)</label>
+                        <div id="secondary-hidden-inputs" style="display:none;">{{ form.secondary_activities }}</div>
+                        <input type="text" id="secondary_activities_search" placeholder="Digite para adicionar..." class="form-input">
+                        <div id="secondary_activities_results" class="cnae-results"></div>
+                        <div id="secondary_activities_selected" class="mt-2 space-y-2">
+                            <!-- Selected items will appear here -->
+                        </div>
+                    </div>
                 </div>
             </fieldset>
 
-            <!-- Dados do Responsável -->
+            <!-- Dados do Responsável Legal/Delegado -->
             <fieldset class="border p-6 rounded-lg">
-                <legend class="text-xl font-semibold px-2 text-secondary">Dados do Responsável Legal</legend>
+                <legend class="text-xl font-semibold px-2 text-secondary">Dados do Responsável Legal/Delegado</legend>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                     <div>{{ form.legal_rep_name.label_tag }} {{ form.legal_rep_name }}</div>
                     <div>{{ form.legal_rep_role.label_tag }} {{ form.legal_rep_role }}</div>
@@ -56,26 +71,108 @@
 
 {% block extra_head %}
 <style>
-    /* Estilos para os campos do formulário */
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: #455A64;
-    }
-    input[type="text"], input[type="email"], select, textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #D1D5DB;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
-        background-color: #F9FAFB;
-    }
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: #41A2C5;
-        box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3);
-        background-color: white;
-    }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #455A64; }
+    .form-input, input[type="text"], input[type="email"], select, textarea { width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; transition: all 0.3s ease; background-color: #F9FAFB; }
+    .form-input:focus, input:focus, select:focus, textarea:focus { outline: none; border-color: #41A2C5; box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3); background-color: white; }
+    .form-input-readonly { background-color: #E5E7EB; cursor: not-allowed; }
+    .cnae-results { position: absolute; background: white; border: 1px solid #D1D5DB; border-top: none; border-radius: 0 0 0.5rem 0.5rem; z-index: 10; width: 100%; max-height: 200px; overflow-y: auto; display: none; }
+    .cnae-item { padding: 0.5rem 0.75rem; cursor: pointer; }
+    .cnae-item:hover { background-color: #F3F4F6; }
+    .selected-cnae { display: flex; justify-content: space-between; align-items: center; background-color: #EBEBEB; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const cnaeOptions = {{ cnae_options_json|safe }};
+    
+    // Setup for Main Activity
+    const mainSearch = document.getElementById('main_activity_search');
+    const mainResults = document.getElementById('main_activity_results');
+    const mainHiddenInput = document.getElementById('id_main_activity');
+
+    function setupCnaeSearch(searchInput, resultsContainer, onSelectCallback) {
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            if (query.length < 2) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            const filtered = cnaeOptions.filter(cnae => 
+                cnae.code.toLowerCase().includes(query) || 
+                cnae.description.toLowerCase().includes(query)
+            );
+
+            resultsContainer.innerHTML = '';
+            if (filtered.length > 0) {
+                filtered.slice(0, 50).forEach(cnae => {
+                    const item = document.createElement('div');
+                    item.className = 'cnae-item';
+                    item.textContent = `${cnae.code} - ${cnae.description}`;
+                    item.addEventListener('click', () => onSelectCallback(cnae));
+                    resultsContainer.appendChild(item);
+                });
+                resultsContainer.style.display = 'block';
+            } else {
+                resultsContainer.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    }
+
+    setupCnaeSearch(mainSearch, mainResults, (cnae) => {
+        mainHiddenInput.value = cnae.id;
+        mainSearch.value = `${cnae.code} - ${cnae.description}`;
+        mainResults.style.display = 'none';
+    });
+
+    // Setup for Secondary Activities
+    const secondarySearch = document.getElementById('secondary_activities_search');
+    const secondaryResults = document.getElementById('secondary_activities_results');
+    const secondaryHiddenContainer = document.getElementById('secondary-hidden-inputs');
+    const secondarySelectedContainer = document.getElementById('secondary_activities_selected');
+    let selectedSecondaryIds = new Set();
+
+    function renderSelectedSecondary() {
+        secondarySelectedContainer.innerHTML = '';
+        secondaryHiddenContainer.innerHTML = '';
+        
+        selectedSecondaryIds.forEach(id => {
+            const cnae = cnaeOptions.find(opt => opt.id == id);
+            if (cnae) {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'selected-cnae';
+                itemEl.innerHTML = `
+                    <span class="truncate pr-2">${cnae.code} - ${cnae.description}</span>
+                    <button type="button" class="ml-2 text-red-500 hover:text-red-700 font-bold" onclick="removeSecondary(${id})">&times;</button>
+                `;
+                secondarySelectedContainer.appendChild(itemEl);
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'secondary_activities';
+                hiddenInput.value = id;
+                secondaryHiddenContainer.appendChild(hiddenInput);
+            }
+        });
+    }
+
+    window.removeSecondary = function(id) {
+        selectedSecondaryIds.delete(id);
+        renderSelectedSecondary();
+    }
+
+    setupCnaeSearch(secondarySearch, secondaryResults, (cnae) => {
+        selectedSecondaryIds.add(cnae.id);
+        renderSelectedSecondary();
+        secondarySearch.value = '';
+        secondaryResults.style.display = 'none';
+    });
+</script>
 {% endblock %}
