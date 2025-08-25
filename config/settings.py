@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_management',
     'company_management',
+    'showcase_management'
 ]
 
 MIDDLEWARE = [
