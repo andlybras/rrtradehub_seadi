@@ -1,0 +1,57 @@
+{% extends 'dashboard_base.html' %}
+
+{% block dashboard_content %}
+    {% if edit_mode %}
+        <h2 class="text-3xl font-bold text-secondary mb-8 font-title">Solicitar Alteração de Dados</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="space-y-6">
+                <div>
+                    <label for="{{ form.razao_social.id_for_label }}">{{ form.razao_social.label }}</label>
+                    {{ form.razao_social }}
+                </div>
+                <div>
+                    <label for="{{ form.nome_fantasia.id_for_label }}">{{ form.nome_fantasia.label }}</label>
+                    {{ form.nome_fantasia }}
+                </div>
+                <div>
+                    <label for="{{ form.cnpj.id_for_label }}">{{ form.cnpj.label }}</label>
+                    {{ form.cnpj }}
+                </div>
+                <div>
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                </div>
+            </div>
+            <button type="submit" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg">
+                Enviar Solicitação
+            </button>
+        </form>
+    {% else %}
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-secondary font-title">Dados de Vínculo</h2>
+            <a href="?edit=true" class="bg-accent text-secondary font-bold py-2 px-4 rounded-lg">
+                Solicitar Alteração
+            </a>
+        </div>
+        <div class="space-y-4 text-lg">
+            <p><strong>Nome de Usuário:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Razão Social:</strong> {{ user.razao_social }}</p>
+            <p><strong>Nome Fantasia:</strong> {{ user.nome_fantasia }}</p>
+            <p><strong>CNPJ:</strong> {{ user.cnpj }}</p>
+        </div>
+
+        <div class="mt-8 border-t pt-6">
+            <h3 class="text-xl font-semibold text-secondary mb-4 font-title">Histórico de Solicitações</h3>
+            {% for req in user.change_requests.all %}
+                <div class="p-4 mb-2 border rounded-lg">
+                    <p><strong>Data:</strong> {{ req.created_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Status:</strong> {{ req.get_status_display }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500">Nenhuma solicitação de alteração encontrada.</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

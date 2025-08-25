@@ -2,15 +2,8 @@ from django import forms
 from .models import CustomUser
 
 class BusinessUserCreationForm(forms.ModelForm):
-    password = forms.CharField(
-        label='Senha', 
-        widget=forms.PasswordInput,
-        help_text="Sua senha não pode ser muito parecida com suas outras informações pessoais."
-    )
-    password2 = forms.CharField(
-        label='Confirmação de Senha', 
-        widget=forms.PasswordInput
-    )
+    password = forms.CharField(label='Senha', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirmação de Senha', widget=forms.PasswordInput)
 
     class Meta:
         model = CustomUser
@@ -35,3 +28,14 @@ class BusinessUserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class UserChangeRequestForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['razao_social', 'nome_fantasia', 'cnpj', 'email']
+        widgets = {
+            'razao_social': forms.TextInput(attrs={'class': 'form-input'}),
+            'nome_fantasia': forms.TextInput(attrs={'class': 'form-input'}),
+            'cnpj': forms.TextInput(attrs={'class': 'form-input'}),
+            'email': forms.EmailInput(attrs={'class': 'form-input'}),
+        }
