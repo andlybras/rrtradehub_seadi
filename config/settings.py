@@ -18,7 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_management',
     'company_management',
-    'showcase_management'
+    'showcase_management',
+    'site_assets',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'site_assets.context_processors.site_assets',
             ],
         },
     },

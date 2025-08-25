@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -18,46 +19,110 @@
         }
         body {
             font-family: var(--font-body);
-            background-color: #EBEBEB;
+            background-image: linear-gradient(rgba(65, 162, 197, 0.5), rgba(65, 162, 197, 0.5)), url("{% static 'images/bandeira_roraima.jpg' %}");
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
         }
-        h1, h2, h3, h4, h5, h6, .font-title {
-            font-family: var(--font-title);
-        }
+        h1, h2, h3, h4, h5, h6, .font-title { font-family: var(--font-title); }
         .bg-primary { background-color: #41A2C5; }
         .bg-secondary { background-color: #263238; }
         .bg-accent { background-color: #FFC727; }
         .text-primary { color: #41A2C5; }
         .text-secondary { color: #263238; }
         .text-accent { color: #FFC727; }
-        .border-accent { border-color: #FFC727; }
+
+        /* Animação do Carrossel de Parceiros Aprimorada */
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-100% / 2)); }
+        }
+        .scroller-inner {
+            display: flex;
+            flex-wrap: nowrap;
+            width: max-content;
+            /* CORREÇÃO: A animação foi removida daqui para ser controlada pelo JS */
+        }
+        
+        /* NOVA REGRA: Ativa a animação apenas quando o JS preparar o conteúdo */
+        .scroller[data-animated="true"] .scroller-inner {
+            animation: scroll 60s linear infinite;
+        }
+
+        .scroller:hover .scroller-inner {
+            animation-play-state: paused;
+        }
+        .partner-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0 2rem;
+            background-color: transparent;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .partner-logo:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transform: translateY(-5px);
+        }
+        .partner-logo img {
+            height: 70px;
+            max-width: 160px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .partner-logo:hover img {
+            transform: scale(1.1);
+        }
     </style>
     
     {% block extra_head %}{% endblock %}
 </head>
 <body class="text-secondary">
 
-    <header class="bg-white shadow-md">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div>
-                <a href="{% url 'home' %}" class="text-2xl font-black font-title text-secondary">Logo</a>
-            </div>
-            <div class="flex items-center space-x-6">
-                <a href="{% url 'home' %}" class="text-gray-600 hover:text-primary font-medium">Início</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-medium">Sobre</a>
-                
-                {% if user.is_authenticated %}
-                    <a href="{% url 'user_management:dashboard' %}" class="text-gray-600 hover:text-primary font-medium">Meu Painel</a>
-                    <form action="{% url 'user_management:logout' %}" method="post" class="inline">
-                        {% csrf_token %}
-                        <button type="submit" class="bg-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity font-semibold">Sair</button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'user_management:login' %}" class="bg-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity font-semibold">Login</a>
-                    <a href="{% url 'user_management:register_business' %}" class="bg-accent text-secondary px-4 py-2 rounded-md hover:opacity-90 transition-opacity font-bold font-title">Registrar Empresa</a>
+    <!-- Header Fixo -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- Logo da Plataforma -->
+            <div class="w-1/4">
+                {% if platform_logo %}
+                <a href="{% url 'home' %}">
+                    <img src="{{ platform_logo.image.url }}" alt="{{ platform_logo.name }}" class="h-12">
+                </a>
                 {% endif %}
             </div>
-        </nav>
+
+            <!-- Botões Centrais -->
+            <nav class="w-1/2 flex justify-center items-center space-x-6">
+                <a href="{% url 'home' %}" class="text-white font-semibold hover:text-accent">Home</a>
+                <a href="#" class="text-white font-semibold hover:text-accent">Módulos</a>
+                <a href="#" class="text-white font-semibold hover:text-accent">Suporte</a>
+                <a href="#" class="text-white font-semibold hover:text-accent">Idioma</a>
+                <!-- Botão de Login/Logout -->
+                <div class="relative">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'user_management:dashboard' %}" class="bg-accent text-secondary px-4 py-2 rounded-md font-bold">Meu Painel</a>
+                    {% else %}
+                        <button id="login-btn" class="bg-white text-secondary px-4 py-2 rounded-md font-bold">Login</button>
+                    {% endif %}
+                </div>
+            </nav>
+
+            <!-- Logo do Governo/SEADI -->
+            <div class="w-1/4 flex justify-end">
+                {% if gov_logo %}
+                <a href="{{ gov_logo.url_link|default:'#' }}" target="_blank">
+                    <img src="{{ gov_logo.image.url }}" alt="{{ gov_logo.name }}" class="h-12">
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </header>
+
+    <!-- Espaçador para compensar o header fixo -->
+    <div class="h-24"></div>
 
     <main class="container mx-auto px-6 py-8">
         {% if messages %}
@@ -68,16 +133,67 @@
             {% endfor %}
         {% endif %}
 
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-white mt-8 py-6">
-        <div class="container mx-auto px-6 text-center text-gray-600">
-            <p>&copy; 2025 Meu Projeto. Todos os direitos reservados.</p>
+    <!-- Carrossel de Parceiros -->
+    <div class="py-20 mt-0">
+        <!-- O JS adicionará o atributo data-animated="true" a este elemento para iniciar a animação -->
+        <div class="scroller w-full overflow-hidden py-4 [mask-image:_linear_gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+            <div class="scroller-inner">
+                {% for logo in partner_logos %}
+                    <a href="{{ logo.url_link|default:'#' }}" target="_blank" class="partner-logo">
+                        <img src="{{ logo.image.url }}" alt="{{ logo.name }}">
+                    </a>
+                {% endfor %}
+            </div>
         </div>
+    </div>
+
+    <!-- Espaço Reservado para o Footer -->
+    <footer class="h-24">
+        <!-- Conteúdo do footer virá aqui -->
     </footer>
 
     {% block extra_js %}{% endblock %}
+
+    <script>
+        // Lógica para mudar o fundo do header ao rolar a página
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('bg-primary', 'shadow-lg');
+            } else {
+                header.classList.remove('bg-primary', 'shadow-lg');
+            }
+        });
+
+        // SCRIPT ATUALIZADO: Lógica para duplicar os logos e garantir o loop infinito
+        document.addEventListener('DOMContentLoaded', () => {
+            const scroller = document.querySelector('.scroller');
+            
+            // Verifica se o elemento scroller existe
+            if (scroller) {
+                const scrollerInner = scroller.querySelector('.scroller-inner');
+                
+                // Verifica se o container interno existe e tem logos para duplicar
+                if (scrollerInner && scrollerInner.children.length > 0) {
+                    const scrollerContent = Array.from(scrollerInner.children);
+
+                    // Duplica cada item e anexa ao final para criar o loop
+                    scrollerContent.forEach(item => {
+                        const duplicatedItem = item.cloneNode(true);
+                        duplicatedItem.setAttribute('aria-hidden', true);
+                        scrollerInner.appendChild(duplicatedItem);
+                    });
+
+                    // Adiciona o atributo para iniciar a animação CSS de forma segura.
+                    // Isso garante que a animação só comece depois que o DOM for duplicado
+                    // e o browser tenha calculado a largura final correta.
+                    scroller.setAttribute('data-animated', true);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
