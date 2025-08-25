@@ -1,0 +1,87 @@
+{% extends 'dashboard_base.html' %}
+
+{% block dashboard_content %}
+<h2 class="text-3xl font-bold text-center text-secondary mb-8 font-title">{% if product %}Editar Produto{% else %}Adicionar Novo Produto{% endif %}</h2>
+
+<form method="POST" enctype="multipart/form-data" class="max-w-2xl mx-auto">
+    {% csrf_token %}
+    <div class="space-y-6">
+        <div>
+            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+            {{ form.title }}
+        </div>
+        <div>
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+        </div>
+        <div class="relative">
+            <label for="ncm_search">NCM (Subitem)</label>
+            {{ form.ncm_subitem }}
+            <input type="text" id="ncm_search" placeholder="Digite o código ou descrição do NCM..." class="form-input" value="{% if product %}{{ product.ncm_subitem }}{% endif %}">
+            <div id="ncm_results" class="cnae-results"></div>
+        </div>
+        <div>
+            <label for="id_images">Imagens (até 3)</label>
+            <input type="file" name="images" id="id_images" multiple class="form-input">
+        </div>
+        <div class="flex items-center">
+            {{ form.is_active }}
+            <label for="{{ form.is_active.id_for_label }}" class="ml-2">{{ form.is_active.label }}</label>
+        </div>
+    </div>
+    <button type="submit" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity">
+        Salvar Produto
+    </button>
+</form>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-input, input[type="text"], input[type="email"], input[type="file"], textarea, select { width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; transition: all 0.3s ease; background-color: #F9FAFB; margin-top: 0.25rem; }
+    .form-input:focus, input:focus, select:focus, textarea:focus { outline: none; border-color: #41A2C5; box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3); background-color: white; }
+    .cnae-results { position: absolute; width: 100%; background-color: white; border: 1px solid #D1D5DB; border-top: none; border-radius: 0 0 0.5rem 0.5rem; z-index: 10; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    .cnae-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #F3F4F6; }
+    .cnae-item:last-child { border-bottom: none; }
+    .cnae-item:hover { background-color: #F3F4F6; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ncmOptions = {{ ncm_options_json|safe }};
+    const ncmSearch = document.getElementById('ncm_search');
+    const ncmResults = document.getElementById('ncm_results');
+    const ncmHiddenInput = document.getElementById('id_ncm_subitem');
+
+    ncmSearch.addEventListener('input', () => {
+        const query = ncmSearch.value.toLowerCase();
+        if (query.length < 3) {
+            ncmResults.style.display = 'none';
+            return;
+        }
+        const filtered = ncmOptions.filter(ncm => ncm.code.toLowerCase().includes(query) || ncm.description.toLowerCase().includes(query));
+        ncmResults.innerHTML = '';
+        if (filtered.length > 0) {
+            filtered.slice(0, 50).forEach(ncm => {
+                const item = document.createElement('div');
+                item.className = 'cnae-item';
+                item.textContent = `${ncm.code} - ${ncm.description}`;
+                item.addEventListener('click', () => {
+                    ncmHiddenInput.value = ncm.id;
+                    ncmSearch.value = `${ncm.code} - ${ncm.description}`;
+                    ncmResults.style.display = 'none';
+                });
+                ncmResults.appendChild(item);
+            });
+            ncmResults.style.display = 'block';
+        } else {
+            ncmResults.style.display = 'none';
+        }
+    });
+    document.addEventListener('click', (e) => {
+        if (!ncmSearch.contains(e.target) && !ncmResults.contains(e.target)) {
+            ncmResults.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

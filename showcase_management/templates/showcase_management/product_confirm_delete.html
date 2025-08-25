@@ -1,0 +1,20 @@
+{% extends 'dashboard_base.html' %}
+
+{% block dashboard_content %}
+<div class="max-w-lg mx-auto text-center">
+    <h1 class="text-3xl font-bold text-secondary font-title mb-4">Confirmar Exclusão</h1>
+    <p class="text-lg text-gray-600 mb-8">Você tem certeza que deseja excluir o produto "{{ product.title }}"? Esta ação não pode ser desfeita.</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="flex justify-center space-x-4">
+            <a href="{% url 'showcase_management:product_list' %}" class="bg-gray-200 text-secondary font-bold py-2 px-6 rounded-lg">
+                Cancelar
+            </a>
+            <button type="submit" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg">
+                Sim, Excluir
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
