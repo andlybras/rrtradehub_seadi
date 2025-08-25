@@ -1,5 +1,25 @@
 {% extends 'dashboard_base.html' %}
 
+{% block extra_head %}
+<style>
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background-color: #F9FAFB;
+        margin-top: 0.25rem;
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: #41A2C5;
+        box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3);
+        background-color: white;
+    }
+</style>
+{% endblock %}
+
 {% block dashboard_content %}
     {% if edit_mode %}
         <h2 class="text-3xl font-bold text-secondary mb-8 font-title">Solicitar Alteração de Dados</h2>
