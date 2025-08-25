@@ -1,62 +1,25 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
-{% block title %}Meu Painel{% endblock %}
-
-{% block content %}
-<div class="flex flex-col md:flex-row min-h-[calc(100vh-200px)]">
-    <!-- Barra Lateral de Navegação -->
-    <aside class="w-full md:w-64 bg-secondary text-white rounded-l-lg p-6 flex-shrink-0 mb-6 md:mb-0">
-        <h2 class="text-xl font-bold mb-6">Painel</h2>
-        <nav class="space-y-2">
-            <a href="{% url 'user_management:dashboard' %}" class="flex items-center px-4 py-2 rounded-md bg-gray-700 text-white">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                Visão Geral
-            </a>
-            <a href="{% url 'company_management:company_details' %}" class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                Dados Empresariais
-            </a>
-            <a href="#" class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                Vitrine
-            </a>
-            <a href="#" class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                Suporte
-            </a>
-            <form action="{% url 'user_management:logout' %}" method="post" class="w-full">
-                {% csrf_token %}
-                <button type="submit" class="w-full flex items-center px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-left">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Sair
-                </button>
-            </form>
-        </nav>
-    </aside>
-
-    <!-- Área de Conteúdo Principal -->
-    <main class="flex-1 bg-white rounded-r-lg p-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">
-            Visão Geral
-        </h1>
-        <p class="text-lg text-gray-600">
-            Olá, <strong>{{ user.username }}</strong>! Bem-vindo ao seu painel de controle.
-        </p>
-        <div class="border-t mt-6 pt-6">
-            {% if not user.company %}
-            <p class="text-gray-600">
-                O próximo passo é cadastrar os dados da sua empresa. Clique em "Dados Empresariais" na barra lateral para começar.
-            </p>
-            {% else %}
-            <p class="text-gray-600">
-                Status da sua empresa: <strong class="px-2 py-1 rounded-full 
-                {% if user.company.status == 'ACTIVE' %}bg-green-100 text-green-800{% endif %}
-                {% if user.company.status == 'REVIEW' %}bg-yellow-100 text-yellow-800{% endif %}
-                {% if user.company.status == 'REJECTED' %}bg-red-100 text-red-800{% endif %}
-                ">{{ user.company.get_status_display }}</strong>
-            </p>
-            {% endif %}
-        </div>
-    </main>
+{% block dashboard_content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-4">
+    Visão Geral
+</h1>
+<p class="text-lg text-gray-600">
+    Olá, <strong>{{ user.username }}</strong>! Bem-vindo ao seu painel de controle.
+</p>
+<div class="border-t mt-6 pt-6">
+    {% if not user.company %}
+    <p class="text-gray-600">
+        O próximo passo é cadastrar os dados da sua empresa. Clique em "Dados Empresariais" na barra lateral para começar.
+    </p>
+    {% else %}
+    <p class="text-gray-600">
+        Status da sua empresa: <strong class="px-2 py-1 rounded-full 
+        {% if user.company.status == 'ACTIVE' %}bg-green-100 text-green-800{% endif %}
+        {% if user.company.status == 'REVIEW' %}bg-yellow-100 text-yellow-800{% endif %}
+        {% if user.company.status == 'REJECTED' %}bg-red-100 text-red-800{% endif %}
+        ">{{ user.company.get_status_display }}</strong>
+    </p>
+    {% endif %}
 </div>
 {% endblock %}
