@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro de Perfil Empresarial{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <h2 class="text-3xl font-bold text-center text-secondary mb-8">Crie sua Conta Empresarial</h2>
+
+    <form method="POST" id="registrationForm" novalidate>
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label for="id_razao_social" class="block mb-2 text-sm font-medium text-gray-700">Razão Social</label>
+                <input type="text" name="razao_social" id="id_razao_social" class="form-input" required>
+            </div>
+            <div>
+                <label for="id_nome_fantasia" class="block mb-2 text-sm font-medium text-gray-700">Nome Fantasia</label>
+                <input type="text" name="nome_fantasia" id="id_nome_fantasia" class="form-input" required>
+            </div>
+        </div>
+        <div class="mb-6">
+            <label for="id_cnpj" class="block mb-2 text-sm font-medium text-gray-700">CNPJ</label>
+            <input type="text" name="cnpj" id="id_cnpj" class="form-input" required placeholder="00.000.000/0000-00">
+            <p id="cnpjError" class="error-message"></p>
+        </div>
+        <div class="mb-6">
+            <label for="id_username" class="block mb-2 text-sm font-medium text-gray-700">Nome de Usuário</label>
+            <input type="text" name="username" id="id_username" class="form-input" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-6">
+            <label for="id_email" class="block mb-2 text-sm font-medium text-gray-700">E-mail</label>
+            <input type="email" name="email" id="id_email" class="form-input" required>
+            <p id="emailError" class="error-message"></p>
+        </div>
+        <div class="mb-6">
+            <label for="id_password1" class="block mb-2 text-sm font-medium text-gray-700">Senha</label>
+            <div class="relative">
+                <input type="password" name="password" id="id_password1" class="form-input pr-10" required>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onclick="togglePassword('id_password1')">
+                    <svg id="eye-icon-1" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                </span>
+            </div>
+            <div id="password-reqs" class="mt-2 text-xs space-y-1 text-gray-500">
+                <p id="req-length">8 ou mais caracteres</p>
+                <p id="req-letter">Letras (a-z, A-Z)</p>
+                <p id="req-number">Números (0-9)</p>
+                <p id="req-special">Caractere especial (!, @, #, etc.)</p>
+            </div>
+        </div>
+        <div class="mb-8">
+            <label for="id_password2" class="block mb-2 text-sm font-medium text-gray-700">Confirme a Senha</label>
+            <div class="relative">
+                <input type="password" name="password_confirmation" id="id_password2" class="form-input pr-10" required>
+                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onclick="togglePassword('id_password2')">
+                    <svg id="eye-icon-2" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                </span>
+            </div>
+            <p id="confirmError" class="error-message"></p>
+        </div>
+        <button type="submit" id="submitButton" class="w-full bg-accent text-secondary font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300" disabled>
+            Criar Conta
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background-color: #F9FAFB;
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: #41A2C5;
+        box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3);
+        background-color: white;
+    }
+    .form-input.is-valid {
+        border-color: #10B981; /* green-500 */
+    }
+    .form-input.is-invalid {
+        border-color: #EF4444; /* red-500 */
+    }
+    .error-message {
+        color: #EF4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: none;
+    }
+    .req-item.met {
+        color: #10B981;
+        text-decoration: line-through;
+    }
+</style>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    const form = document.getElementById('registrationForm');
+    const submitButton = document.getElementById('submitButton');
+    
+    const fields = {
+        razao_social: { el: document.getElementById('id_razao_social'), valid: false },
+        nome_fantasia: { el: document.getElementById('id_nome_fantasia'), valid: false },
+        cnpj: { el: document.getElementById('id_cnpj'), valid: false, errorEl: document.getElementById('cnpjError') },
+        username: { el: document.getElementById('id_username'), valid: false },
+        email: { el: document.getElementById('id_email'), valid: false, errorEl: document.getElementById('emailError') },
+        password: { el: document.getElementById('id_password1'), valid: false },
+        password_confirm: { el: document.getElementById('id_password2'), valid: false, errorEl: document.getElementById('confirmError') }
+    };
+
+    const passwordReqs = {
+        length: { el: document.getElementById('req-length'), met: false },
+        letter: { el: document.getElementById('req-letter'), met: false },
+        number: { el: document.getElementById('req-number'), met: false },
+        special: { el: document.getElementById('req-special'), met: false }
+    };
+
+    function validateAll() {
+        let allValid = true;
+        for (const key in fields) {
+            if (!fields[key].valid) {
+                allValid = false;
+                break;
+            }
+        }
+        submitButton.disabled = !allValid;
+    }
+
+    function setFieldState(field, isValid, errorMessage = '') {
+        field.valid = isValid;
+        if (isValid) {
+            field.el.classList.remove('is-invalid');
+            field.el.classList.add('is-valid');
+            if (field.errorEl) {
+                field.errorEl.style.display = 'none';
+            }
+        } else {
+            field.el.classList.remove('is-valid');
+            field.el.classList.add('is-invalid');
+            if (field.errorEl) {
+                field.errorEl.textContent = errorMessage;
+                field.errorEl.style.display = 'block';
+            }
+        }
+        validateAll();
+    }
+
+    ['razao_social', 'nome_fantasia', 'username'].forEach(key => {
+        fields[key].el.addEventListener('input', () => {
+            setFieldState(fields[key], fields[key].el.value.trim() !== '');
+        });
+    });
+
+    fields.cnpj.el.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+        e.target.value = value.slice(0, 18);
+        
+        const isValid = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(e.target.value);
+        setFieldState(fields.cnpj, isValid, 'Formato de CNPJ inválido.');
+    });
+
+    fields.email.el.addEventListener('input', (e) => {
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value);
+        setFieldState(fields.email, isValid, 'Por favor, insira um e-mail válido.');
+    });
+
+    fields.password.el.addEventListener('input', (e) => {
+        const value = e.target.value;
+        passwordReqs.length.met = value.length >= 8;
+        passwordReqs.letter.met = /[a-zA-Z]/.test(value);
+        passwordReqs.number.met = /\d/.test(value);
+        passwordReqs.special.met = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+
+        let allReqsMet = true;
+        for (const key in passwordReqs) {
+            const req = passwordReqs[key];
+            req.el.classList.toggle('met', req.met);
+            if (!req.met) allReqsMet = false;
+        }
+        setFieldState(fields.password, allReqsMet);
+        validatePasswordConfirm();
+    });
+
+    function validatePasswordConfirm() {
+        const passwordValue = fields.password.el.value;
+        const confirmValue = fields.password_confirm.el.value;
+        const isValid = passwordValue === confirmValue && confirmValue !== '';
+        setFieldState(fields.password_confirm, isValid, 'As senhas não coincidem.');
+    }
+    fields.password_confirm.el.addEventListener('input', validatePasswordConfirm);
+
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const iconId = fieldId === 'id_password1' ? 'eye-icon-1' : 'eye-icon-2';
+        const icon = document.getElementById(iconId);
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a10.05 10.05 0 013.453-5.118m11.33 2.234A10.05 10.05 0 0012 5c-1.33 0-2.59.3-3.75.845m.002 6.31A3 3 0 0012 15a3 3 0 002.121-.879M1 1l22 22" />`;
+        } else {
+            field.type = 'password';
+            icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
+        }
+    }
+</script>
+{% endblock %}
