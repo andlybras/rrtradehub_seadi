@@ -77,3 +77,88 @@
         </div>
     {% endif %}
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    // Garante que o script só rode se o formulário estiver na página
+    if (document.getElementById('main_activity_search')) {
+        const cnaeOptions = {{ cnae_options_json|safe }};
+        
+        const mainSearch = document.getElementById('main_activity_search');
+        const mainResults = document.getElementById('main_activity_results');
+        const mainHiddenInput = document.getElementById('id_main_activity');
+
+        function setupCnaeSearch(searchInput, resultsContainer, onSelectCallback) {
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                if (query.length < 2) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
+                const filtered = cnaeOptions.filter(cnae => cnae.code.toLowerCase().includes(query) || cnae.description.toLowerCase().includes(query));
+                resultsContainer.innerHTML = '';
+                if (filtered.length > 0) {
+                    filtered.slice(0, 50).forEach(cnae => {
+                        const item = document.createElement('div');
+                        item.className = 'cnae-item';
+                        item.textContent = `${cnae.code} - ${cnae.description}`;
+                        item.addEventListener('click', () => onSelectCallback(cnae));
+                        resultsContainer.appendChild(item);
+                    });
+                    resultsContainer.style.display = 'block';
+                } else {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+        }
+
+        setupCnaeSearch(mainSearch, mainResults, (cnae) => {
+            mainHiddenInput.value = cnae.id;
+            mainSearch.value = `${cnae.code} - ${cnae.description}`;
+            mainResults.style.display = 'none';
+        });
+
+        const secondarySearch = document.getElementById('secondary_activities_search');
+        const secondaryResults = document.getElementById('secondary_activities_results');
+        const secondaryHiddenContainer = document.getElementById('secondary-hidden-inputs');
+        const secondarySelectedContainer = document.getElementById('secondary_activities_selected');
+        let selectedSecondaryIds = new Set();
+
+        function renderSelectedSecondary() {
+            secondarySelectedContainer.innerHTML = '';
+            secondaryHiddenContainer.innerHTML = '';
+            selectedSecondaryIds.forEach(id => {
+                const cnae = cnaeOptions.find(opt => opt.id == id);
+                if (cnae) {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'selected-cnae';
+                    itemEl.innerHTML = `<span class="truncate pr-2">${cnae.code} - ${cnae.description}</span><button type="button" class="ml-2 text-red-500 hover:text-red-700 font-bold" onclick="removeSecondary(${id})">&times;</button>`;
+                    secondarySelectedContainer.appendChild(itemEl);
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'secondary_activities';
+                    hiddenInput.value = id;
+                    secondaryHiddenContainer.appendChild(hiddenInput);
+                }
+            });
+        }
+
+        window.removeSecondary = function(id) {
+            selectedSecondaryIds.delete(id);
+            renderSelectedSecondary();
+        }
+
+        setupCnaeSearch(secondarySearch, secondaryResults, (cnae) => {
+            selectedSecondaryIds.add(cnae.id);
+            renderSelectedSecondary();
+            secondarySearch.value = '';
+            secondaryResults.style.display = 'none';
+        });
+    }
+</script>
+{% endblock %}

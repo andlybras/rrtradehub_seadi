@@ -2,18 +2,6 @@ from django import forms
 from .models import Company, CNAE
 
 class CompanyCreationForm(forms.ModelForm):
-    main_activity = forms.ModelChoiceField(
-        queryset=CNAE.objects.all(),
-        label="Atividade Principal (CNAE)",
-        empty_label="Selecione uma atividade principal"
-    )
-    secondary_activities = forms.ModelMultipleChoiceField(
-        queryset=CNAE.objects.all(),
-        label="Atividades Secundárias (CNAE)",
-        widget=forms.SelectMultiple(attrs={'size': '10'}),
-        required=False
-    )
-
     class Meta:
         model = Company
         fields = [
@@ -22,40 +10,23 @@ class CompanyCreationForm(forms.ModelForm):
             'institutional_email', 'address', 'logo', 'legal_rep_name',
             'legal_rep_role', 'legal_rep_contact', 'legal_rep_email'
         ]
-        labels = {
-            'razao_social': 'Razão Social',
-            'nome_fantasia': 'Nome Fantasia',
-            'cnpj': 'CNPJ',
-            'inscricao_estadual': 'Inscrição Estadual',
-            'institutional_contact': 'Contato Institucional',
-            'institutional_email': 'E-mail Institucional',
-            'address': 'Endereço Principal',
-            'logo': 'Logotipo da Empresa',
-            'legal_rep_name': 'Nome Completo',
-            'legal_rep_role': 'Cargo/Função',
-            'legal_rep_contact': 'Contato Direto/WhatsApp',
-            'legal_rep_email': 'Email',
-        }
         widgets = {
-            'razao_social': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}),
-            'nome_fantasia': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}),
-            'cnpj': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}),
+            'razao_social': forms.TextInput(attrs={'class': 'form-input-readonly', 'readonly': True}),
+            'nome_fantasia': forms.TextInput(attrs={'class': 'form-input-readonly', 'readonly': True}),
+            'cnpj': forms.TextInput(attrs={'class': 'form-input-readonly', 'readonly': True}),
+            'inscricao_estadual': forms.TextInput(attrs={'class': 'form-input'}),
+            'institutional_contact': forms.TextInput(attrs={'class': 'form-input'}),
+            'institutional_email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'address': forms.Textarea(attrs={'class': 'form-input', 'rows': 3}),
+            'legal_rep_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'legal_rep_role': forms.TextInput(attrs={'class': 'form-input'}),
+            'legal_rep_contact': forms.TextInput(attrs={'class': 'form-input'}),
+            'legal_rep_email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'main_activity': forms.HiddenInput(),
+            'secondary_activities': forms.MultipleHiddenInput(),
         }
 
 class CompanyChangeRequestForm(forms.ModelForm):
-    main_activity = forms.ModelChoiceField(
-        queryset=CNAE.objects.all(),
-        label="Atividade Principal (CNAE)",
-        empty_label="Selecione uma atividade principal",
-        widget=forms.HiddenInput()
-    )
-    secondary_activities = forms.ModelMultipleChoiceField(
-        queryset=CNAE.objects.all(),
-        label="Atividades Secundárias (CNAE)",
-        widget=forms.MultipleHiddenInput(),
-        required=False
-    )
-    
     class Meta:
         model = Company
         fields = [
@@ -63,35 +34,15 @@ class CompanyChangeRequestForm(forms.ModelForm):
             'institutional_contact', 'institutional_email', 'address', 'logo', 
             'legal_rep_name', 'legal_rep_role', 'legal_rep_contact', 'legal_rep_email'
         ]
-        labels = {
-            'inscricao_estadual': 'Inscrição Estadual',
-            'institutional_contact': 'Contato Institucional',
-            'institutional_email': 'E-mail Institucional',
-            'address': 'Endereço Principal',
-            'logo': 'Logotipo da Empresa',
-            'legal_rep_name': 'Nome Completo',
-            'legal_rep_role': 'Cargo/Função',
-            'legal_rep_contact': 'Contato Direto/WhatsApp',
-            'legal_rep_email': 'Email',
+        widgets = {
+            'inscricao_estadual': forms.TextInput(attrs={'class': 'form-input'}),
+            'institutional_contact': forms.TextInput(attrs={'class': 'form-input'}),
+            'institutional_email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'address': forms.Textarea(attrs={'class': 'form-input', 'rows': 3}),
+            'legal_rep_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'legal_rep_role': forms.TextInput(attrs={'class': 'form-input'}),
+            'legal_rep_contact': forms.TextInput(attrs={'class': 'form-input'}),
+            'legal_rep_email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'main_activity': forms.HiddenInput(),
+            'secondary_activities': forms.MultipleHiddenInput(),
         }
-
-class CompanyBaseForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if not isinstance(field.widget, (forms.HiddenInput, forms.CheckboxInput)):
-                field.widget.attrs.update({'class': 'form-input'})
-
-class CompanyCreationForm(CompanyBaseForm):
-    class Meta:
-        model = Company
-        fields = ['razao_social', 'nome_fantasia', 'cnpj', 'inscricao_estadual', 'main_activity', 'secondary_activities', 'institutional_contact', 'institutional_email', 'address', 'logo', 'legal_rep_name', 'legal_rep_role', 'legal_rep_contact', 'legal_rep_email']
-        labels = {'razao_social': 'Razão Social', 'nome_fantasia': 'Nome Fantasia', 'cnpj': 'CNPJ', 'inscricao_estadual': 'Inscrição Estadual', 'institutional_contact': 'Contato Institucional', 'institutional_email': 'E-mail Institucional', 'address': 'Endereço Principal', 'logo': 'Logotipo da Empresa', 'legal_rep_name': 'Nome Completo', 'legal_rep_role': 'Cargo/Função', 'legal_rep_contact': 'Contato Direto/WhatsApp', 'legal_rep_email': 'Email'}
-        widgets = {'razao_social': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}), 'nome_fantasia': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}), 'cnpj': forms.TextInput(attrs={'readonly': True, 'class': 'form-input-readonly'}), 'main_activity': forms.HiddenInput(), 'secondary_activities': forms.MultipleHiddenInput()}
-
-class CompanyChangeRequestForm(CompanyBaseForm):
-    class Meta:
-        model = Company
-        fields = ['inscricao_estadual', 'main_activity', 'secondary_activities', 'institutional_contact', 'institutional_email', 'address', 'logo', 'legal_rep_name', 'legal_rep_role', 'legal_rep_contact', 'legal_rep_email']
-        labels = {'inscricao_estadual': 'Inscrição Estadual', 'institutional_contact': 'Contato Institucional', 'institutional_email': 'E-mail Institucional', 'address': 'Endereço Principal', 'logo': 'Logotipo da Empresa', 'legal_rep_name': 'Nome Completo', 'legal_rep_role': 'Cargo/Função', 'legal_rep_contact': 'Contato Direto/WhatsApp', 'legal_rep_email': 'Email'}
-        widgets = {'main_activity': forms.HiddenInput(), 'secondary_activities': forms.MultipleHiddenInput()}
