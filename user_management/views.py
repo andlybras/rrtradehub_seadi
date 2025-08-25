@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import BusinessUserCreationForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def home_page(request):
     context = {
@@ -20,3 +21,7 @@ def register_business(request):
         form = BusinessUserCreationForm()
     
     return render(request, 'register_business.html', {'form': form})
+
+@login_required
+def dashboard(request):
+    return render(request, 'dashboard.html')

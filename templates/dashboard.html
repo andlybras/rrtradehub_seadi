@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Painel{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">
+        Olá, {{ user.username }}!
+    </h1>
+    <p class="text-lg text-gray-600 mb-6">
+        Bem-vindo ao seu painel de controle.
+    </p>
+    
+    <a href="#" class="bg-accent text-secondary font-bold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity">
+        Cadastrar Minha Empresa
+    </a>
+</div>
+{% endblock %}

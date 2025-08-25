@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <h2 class="text-3xl font-bold text-center text-secondary mb-8">Acessar sua Conta</h2>
+
+    {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <p>Seu nome de usuário e senha não correspondem. Por favor, tente novamente.</p>
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-6">
+            <label for="id_username" class="block mb-2 text-sm font-medium text-gray-700">Nome de Usuário</label>
+            <input type="text" name="username" id="id_username" class="form-input" required>
+        </div>
+        <div class="mb-6">
+            <label for="id_password" class="block mb-2 text-sm font-medium text-gray-700">Senha</label>
+            <input type="password" name="password" id="id_password" class="form-input" required>
+        </div>
+        <button type="submit" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity">
+            Entrar
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background-color: #F9FAFB;
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: #41A2C5;
+        box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3);
+        background-color: white;
+    }
+</style>
+{% endblock %}

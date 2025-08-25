@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #EBEBEB; /* Cor de fundo principal */
+            background-color: #EBEBEB;
         }
         .bg-primary { background-color: #41A2C5; }
         .bg-secondary { background-color: #263238; }
@@ -36,8 +36,14 @@
             <div class="flex items-center space-x-4">
                 <a href="{% url 'home' %}" class="text-gray-600 hover:text-primary">Início</a>
                 <a href="#" class="text-gray-600 hover:text-primary">Sobre</a>
-                <a href="#" class="bg-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity">Login</a>
-                <a href="{% url 'user_management:register_business' %}" class="bg-accent text-secondary px-4 py-2 rounded-md hover:opacity-90 transition-opacity font-semibold">Registrar Empresa</a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'user_management:dashboard' %}" class="text-gray-600 hover:text-primary">Meu Painel</a>
+                    <a href="{% url 'user_management:logout' %}" class="bg-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity">Sair</a>
+                {% else %}
+                    <a href="{% url 'user_management:login' %}" class="bg-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity">Login</a>
+                    <a href="{% url 'user_management:register_business' %}" class="bg-accent text-secondary px-4 py-2 rounded-md hover:opacity-90 transition-opacity font-semibold">Registrar Empresa</a>
+                {% endif %}
             </div>
         </nav>
     </header>
