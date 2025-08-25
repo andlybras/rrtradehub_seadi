@@ -6,6 +6,7 @@ from .models import Product, ProductImage, NCMSubitem, NCMChapter, NCMPosition, 
 from .forms import ProductForm
 import json
 
+# --- Views do Painel (já existentes) ---
 @login_required
 def product_list(request):
     try:
@@ -15,7 +16,6 @@ def product_list(request):
         products = []
         messages.warning(request, "Você precisa cadastrar os dados da sua empresa primeiro.")
         return redirect('company_management:company_details')
-
     return render(request, 'showcase_management/product_list.html', {'products': products})
 
 @login_required
@@ -32,18 +32,12 @@ def product_create(request):
             messages.success(request, "Produto cadastrado com sucesso!")
             return redirect('showcase_management:product_list')
         else:
-            if not images:
-                messages.error(request, "Você precisa enviar pelo menos uma imagem.")
-            if len(images) > 3:
-                messages.error(request, "Você pode enviar no máximo 3 imagens.")
+            if not images: messages.error(request, "Você precisa enviar pelo menos uma imagem.")
+            if len(images) > 3: messages.error(request, "Você pode enviar no máximo 3 imagens.")
     else:
         form = ProductForm()
-
     ncm_options = list(NCMSubitem.objects.values('id', 'code', 'description'))
-    context = {
-        'form': form,
-        'ncm_options_json': json.dumps(ncm_options)
-    }
+    context = {'form': form, 'ncm_options_json': json.dumps(ncm_options)}
     return render(request, 'showcase_management/product_form.html', context)
 
 @login_required
@@ -57,13 +51,8 @@ def product_update(request, pk):
             return redirect('showcase_management:product_list')
     else:
         form = ProductForm(instance=product)
-
     ncm_options = list(NCMSubitem.objects.values('id', 'code', 'description'))
-    context = {
-        'form': form,
-        'product': product,
-        'ncm_options_json': json.dumps(ncm_options)
-    }
+    context = {'form': form, 'product': product, 'ncm_options_json': json.dumps(ncm_options)}
     return render(request, 'showcase_management/product_form.html', context)
 
 @login_required
@@ -75,64 +64,39 @@ def product_delete(request, pk):
         return redirect('showcase_management:product_list')
     return render(request, 'showcase_management/product_confirm_delete.html', {'product': product})
 
+# --- Views Públicas ---
 def search_page(request):
-    # Filtra apenas capítulos que têm produtos ativos de empresas ativas
-    active_chapters = NCMChapter.objects.filter(
+    active_chapters_qs = NCMChapter.objects.filter(
         positions__subitems__products__is_active=True,
         positions__subitems__products__company__status=Company.Status.ACTIVE
-    ).distinct()
+    ).distinct().values('id', 'code', 'description')
     
     context = {
-        'chapters': active_chapters,
+        'chapters_json': json.dumps(list(active_chapters_qs)),
     }
     return render(request, 'showcase_management/search_page.html', context)
 
 def search_results(request):
     product_id = request.GET.get('product')
-    if not product_id:
-        return redirect('showcase_public:search_page')
-
+    if not product_id: return redirect('showcase_public:search_page')
     product = get_object_or_404(Product, pk=product_id)
-    # Encontra todas as empresas ativas que vendem este produto
-    companies = Company.objects.filter(
-        status=Company.Status.ACTIVE,
-        products__id=product_id
-    ).distinct()
-
-    context = {
-        'product': product,
-        'companies': companies,
-    }
+    companies = Company.objects.filter(status=Company.Status.ACTIVE, products__id=product_id).distinct()
+    context = {'product': product, 'companies': companies}
     return render(request, 'showcase_management/search_results.html', context)
 
 def public_company_profile(request, pk):
     company = get_object_or_404(Company, pk=pk, status=Company.Status.ACTIVE)
     highlight_product_id = request.GET.get('produto')
-    
-    context = {
-        'company': company,
-        'highlight_product_id': int(highlight_product_id) if highlight_product_id else None,
-    }
+    context = {'company': company, 'highlight_product_id': int(highlight_product_id) if highlight_product_id else None}
     return render(request, 'showcase_management/public_company_profile.html', context)
 
-# --- Endpoints para AJAX ---
-
+# --- Endpoints AJAX ---
 def load_positions(request):
     chapter_id = request.GET.get('chapter_id')
-    # Filtra posições que têm produtos ativos de empresas ativas
-    positions = list(NCMPosition.objects.filter(
-        chapter_id=chapter_id,
-        subitems__products__is_active=True,
-        subitems__products__company__status=Company.Status.ACTIVE
-    ).distinct().values('id', 'code', 'description'))
+    positions = list(NCMPosition.objects.filter(chapter_id=chapter_id, subitems__products__is_active=True, subitems__products__company__status=Company.Status.ACTIVE).distinct().values('id', 'code', 'description'))
     return JsonResponse(positions, safe=False)
 
 def load_products(request):
     position_id = request.GET.get('position_id')
-    # Filtra produtos ativos de empresas ativas
-    products = list(Product.objects.filter(
-        ncm_subitem__position_id=position_id,
-        is_active=True,
-        company__status=Company.Status.ACTIVE
-    ).distinct().values('id', 'title'))
+    products = list(Product.objects.filter(ncm_subitem__position_id=position_id, is_active=True, company__status=Company.Status.ACTIVE).distinct().values('id', 'title'))
     return JsonResponse(products, safe=False)

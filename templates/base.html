@@ -7,30 +7,22 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Importação das Novas Fontes do Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        /* Definindo as fontes como variáveis para fácil manutenção */
         :root {
             --font-title: 'Montserrat', sans-serif;
             --font-body: 'Bai Jamjuree', sans-serif;
         }
-
-        /* Aplicando a fonte de corpo como padrão */
         body {
             font-family: var(--font-body);
             background-color: #EBEBEB;
         }
-
-        /* Aplicando a fonte de título para todos os cabeçalhos e elementos com a classe 'font-title' */
         h1, h2, h3, h4, h5, h6, .font-title {
             font-family: var(--font-title);
         }
-
-        /* Classes de cor para consistência */
         .bg-primary { background-color: #41A2C5; }
         .bg-secondary { background-color: #263238; }
         .bg-accent { background-color: #FFC727; }
@@ -49,7 +41,7 @@
             <div>
                 <a href="{% url 'home' %}" class="text-2xl font-black font-title text-secondary">Logo</a>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-6">
                 <a href="{% url 'home' %}" class="text-gray-600 hover:text-primary font-medium">Início</a>
                 <a href="#" class="text-gray-600 hover:text-primary font-medium">Sobre</a>
                 

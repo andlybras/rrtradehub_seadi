@@ -3,12 +3,35 @@
 {% block title %}Página Inicial{% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-md text-center">
-    <h1 class="text-4xl font-bold text-gray-800 mb-4">
-        {{ titulo_da_pagina }}
-    </h1>
-    <p class="text-lg text-gray-600">
-        Esta é a página principal do nosso projeto. A partir daqui, construiremos todas as funcionalidades.
-    </p>
+<div class="flex flex-col lg:flex-row gap-8" style="align-items: stretch;">
+
+    <!-- Coluna da Esquerda -->
+    <div class="lg:w-1/3 flex flex-col gap-8">
+        <!-- Card de Boas Vindas (ocupa metade da altura) -->
+        <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col justify-center flex-1">
+            <h2 class="text-3xl font-bold font-title text-secondary mb-4">Bem-vindo!</h2>
+            <p class="text-gray-600 text-lg">Explore as oportunidades de negócio e conecte-se com o mercado de Roraima.</p>
+        </div>
+        <!-- Cards de Ação (ocupam a outra metade) -->
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+            <a href="{% url 'showcase_public:search_page' %}" class="bg-primary text-white p-8 rounded-2xl shadow-lg hover:scale-105 transform transition-transform duration-300 flex flex-col justify-center">
+                <h3 class="text-2xl font-bold font-title mb-2">Quero Comprar</h3>
+                <p>Encontre produtos e fornecedores em nossa plataforma.</p>
+            </a>
+            <a href="{% url 'user_management:register_business' %}" class="bg-secondary text-white p-8 rounded-2xl shadow-lg hover:scale-105 transform transition-transform duration-300 flex flex-col justify-center">
+                <h3 class="text-2xl font-bold font-title mb-2">Quero Vender</h3>
+                <p>Cadastre sua empresa e exponha seus produtos.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Coluna da Direita -->
+    <div class="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-6">
+        {% for card_title in card_titles %}
+        <a href="#" class="bg-white p-6 rounded-2xl shadow-lg flex items-center justify-center text-center hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300">
+            <h3 class="text-lg font-bold font-title text-secondary">{{ card_title }}</h3>
+        </a>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

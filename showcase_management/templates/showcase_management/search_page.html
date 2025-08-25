@@ -2,6 +2,19 @@
 
 {% block title %}Quero Comprar{% endblock %}
 
+{% block extra_head %}
+<style>
+    .search-input { width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; transition: all 0.3s ease; background-color: #F9FAFB; }
+    .search-input:focus { outline: none; border-color: #41A2C5; box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3); background-color: white; }
+    .search-input:disabled { background-color: #E5E7EB; cursor: not-allowed; }
+    .search-results-container { position: absolute; width: 100%; background-color: white; border: 1px solid #D1D5DB; border-top: none; border-radius: 0 0 0.5rem 0.5rem; z-index: 10; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    .result-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #F3F4F6; }
+    .result-item:last-child { border-bottom: none; }
+    .result-item:hover { background-color: #F3F4F6; }
+    .result-item strong { color: #263238; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
     <h1 class="text-4xl font-bold text-center text-secondary mb-2 font-title">Encontre o que você precisa</h1>
@@ -10,28 +23,25 @@
     <form id="searchForm" action="{% url 'showcase_public:search_results' %}" method="GET">
         <div class="space-y-6">
             <!-- Área (Capítulo) -->
-            <div>
-                <label for="chapter" class="block text-lg font-medium text-gray-700">Área</label>
-                <select name="chapter" id="chapter" class="form-input">
-                    <option value="">Selecione uma área...</option>
-                    {% for chapter in chapters %}
-                        <option value="{{ chapter.id }}">{{ chapter.code }} - {{ chapter.description }}</option>
-                    {% endfor %}
-                </select>
+            <div class="relative">
+                <label for="chapter_search" class="block text-lg font-medium text-gray-700">Área</label>
+                <input type="text" id="chapter_search" class="search-input" placeholder="Digite o código ou nome da área...">
+                <input type="hidden" name="chapter" id="chapter_hidden">
+                <div id="chapter_results" class="search-results-container"></div>
             </div>
             <!-- Setor (Posição) -->
-            <div>
-                <label for="position" class="block text-lg font-medium text-gray-700">Setor</label>
-                <select name="position" id="position" class="form-input" disabled>
-                    <option value="">Selecione um setor...</option>
-                </select>
+            <div class="relative">
+                <label for="position_search" class="block text-lg font-medium text-gray-700">Setor</label>
+                <input type="text" id="position_search" class="search-input" placeholder="Primeiro, selecione uma área..." disabled>
+                <input type="hidden" name="position" id="position_hidden">
+                <div id="position_results" class="search-results-container"></div>
             </div>
             <!-- Produto -->
-            <div>
-                <label for="product" class="block text-lg font-medium text-gray-700">Produto</label>
-                <select name="product" id="product" class="form-input" disabled>
-                    <option value="">Selecione um produto...</option>
-                </select>
+            <div class="relative">
+                <label for="product_search" class="block text-lg font-medium text-gray-700">Produto</label>
+                <input type="text" id="product_search" class="search-input" placeholder="Primeiro, selecione um setor..." disabled>
+                <input type="hidden" name="product" id="product_hidden">
+                <div id="product_results" class="search-results-container"></div>
             </div>
         </div>
         <button type="submit" id="searchButton" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>
@@ -43,53 +53,102 @@
 
 {% block extra_js %}
 <script>
-    const chapterSelect = document.getElementById('chapter');
-    const positionSelect = document.getElementById('position');
-    const productSelect = document.getElementById('product');
+    const chapters = {{ chapters_json|safe }};
+    
+    function setupSearch(inputId, resultsId, hiddenId, dataProvider, onSelectCallback) {
+        const searchInput = document.getElementById(inputId);
+        const resultsContainer = document.getElementById(resultsId);
+        const hiddenInput = document.getElementById(hiddenId);
+
+        const showAndFilterResults = () => {
+            if (searchInput.disabled) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+            const query = searchInput.value.toLowerCase();
+            resultsContainer.innerHTML = '';
+            const data = typeof dataProvider === 'function' ? dataProvider() : dataProvider;
+            if (!data || data.length === 0) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+            const filtered = data.filter(item => 
+                (item.code && item.code.toLowerCase().includes(query)) || 
+                (item.description && item.description.toLowerCase().includes(query)) ||
+                (item.title && item.title.toLowerCase().includes(query))
+            );
+            if (filtered.length > 0) {
+                filtered.slice(0, 50).forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'result-item';
+                    const title = item.title || item.description;
+                    const code = item.code ? `<strong>${item.code}</strong> - ` : '';
+                    itemEl.innerHTML = `${code}${title}`;
+                    itemEl.addEventListener('click', () => {
+                        searchInput.value = `${item.code ? item.code + ' - ' : ''}${title}`;
+                        hiddenInput.value = item.id;
+                        resultsContainer.style.display = 'none';
+                        if (onSelectCallback) onSelectCallback(item.id);
+                    });
+                    resultsContainer.appendChild(itemEl);
+                });
+                resultsContainer.style.display = 'block';
+            } else {
+                resultsContainer.style.display = 'none';
+            }
+        };
+        
+        searchInput.addEventListener('focus', showAndFilterResults);
+        searchInput.addEventListener('input', () => {
+            hiddenInput.value = '';
+            if (onSelectCallback) onSelectCallback(null);
+            showAndFilterResults();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    }
+
+    const positionSearchInput = document.getElementById('position_search');
+    const productSearchInput = document.getElementById('product_search');
     const searchButton = document.getElementById('searchButton');
+    let positionsData = [];
+    let productsData = [];
 
-    chapterSelect.addEventListener('change', () => {
-        const chapterId = chapterSelect.value;
-        positionSelect.innerHTML = '<option value="">Carregando...</option>';
-        productSelect.innerHTML = '<option value="">Selecione um produto...</option>';
-        positionSelect.disabled = true;
-        productSelect.disabled = true;
+    setupSearch('chapter_search', 'chapter_results', 'chapter_hidden', chapters, (selectedId) => {
+        positionSearchInput.disabled = !selectedId;
+        positionSearchInput.value = '';
+        document.getElementById('position_hidden').value = '';
+        productSearchInput.disabled = true;
+        productSearchInput.value = '';
+        document.getElementById('product_hidden').value = '';
         searchButton.disabled = true;
-
-        if (chapterId) {
-            fetch(`{% url 'showcase_public:ajax_load_positions' %}?chapter_id=${chapterId}`)
-                .then(response => response.json())
-                .then(data => {
-                    positionSelect.innerHTML = '<option value="">Selecione um setor...</option>';
-                    data.forEach(pos => {
-                        positionSelect.innerHTML += `<option value="${pos.id}">${pos.code} - ${pos.description}</option>`;
-                    });
-                    positionSelect.disabled = false;
-                });
+        if (selectedId) {
+            fetch(`{% url 'showcase_public:ajax_load_positions' %}?chapter_id=${selectedId}`)
+                .then(res => res.json()).then(data => { positionsData = data; });
+        } else {
+            positionsData = [];
         }
     });
 
-    positionSelect.addEventListener('change', () => {
-        const positionId = positionSelect.value;
-        productSelect.innerHTML = '<option value="">Carregando...</option>';
-        productSelect.disabled = true;
+    setupSearch('position_search', 'position_results', 'position_hidden', () => positionsData, (selectedId) => {
+        productSearchInput.disabled = !selectedId;
+        productSearchInput.value = '';
+        document.getElementById('product_hidden').value = '';
         searchButton.disabled = true;
-
-        if (positionId) {
-            fetch(`{% url 'showcase_public:ajax_load_products' %}?position_id=${positionId}`)
-                .then(response => response.json())
-                .then(data => {
-                    productSelect.innerHTML = '<option value="">Selecione um produto...</option>';
-                    data.forEach(prod => {
-                        productSelect.innerHTML += `<option value="${prod.id}">${prod.title}</option>`;
-                    });
-                    productSelect.disabled = false;
-                });
+        if (selectedId) {
+            fetch(`{% url 'showcase_public:ajax_load_products' %}?position_id=${selectedId}`)
+                .then(res => res.json()).then(data => { productsData = data; });
+        } else {
+            productsData = [];
         }
     });
 
-    productSelect.addEventListener('change', () => {
-        searchButton.disabled = !productSelect.value;
+    setupSearch('product_search', 'product_results', 'product_hidden', () => productsData, (selectedId) => {
+        searchButton.disabled = !selectedId;
     });
 </script>
 {% endblock %}

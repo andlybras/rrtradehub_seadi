@@ -6,8 +6,13 @@ from .models import UserChangeRequest
 import json
 
 def home_page(request):
+    card_titles = [
+        "Inteligência de Mercado", "Acordos e Regulamentos", "Oportunidades",
+        "Aprenda Comex", "Destino Roraima", "Notícias"
+    ]
     context = {
         'titulo_da_pagina': 'Bem-vindo ao nosso site!',
+        'card_titles': card_titles,
     }
     return render(request, 'home.html', context)
 
