@@ -16,6 +16,10 @@ def home_page(request):
     }
     return render(request, 'home.html', context)
 
+def vender_landing(request):
+    return render(request, 'user_management/vender_landing.html')
+
+
 def register_business(request):
     if request.method == 'POST':
         form = BusinessUserCreationForm(request.POST)
