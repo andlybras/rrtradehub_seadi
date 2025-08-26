@@ -51,10 +51,15 @@
     <!-- Coluna da Direita -->
     <div class="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-6">
         {% for card_title in card_titles %}
-        <a href="#" class="bg-white p-6 rounded-2xl shadow-lg flex items-center justify-center text-center hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300">
-            <h3 class="text-lg font-bold font-title text-secondary">{{ card_title }}</h3>
-        </a>
-        {% endfor %}
+    {# Verificamos se o card atual é o de Inteligência de Mercado #}
+    {% if card_title == "Inteligência de Mercado" %}
+            <a href="{% url 'intelligence_market:indicator_list' %}" class="bg-white p-6 rounded-2xl shadow-lg flex items-center justify-center text-center hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300">
+        {% else %}
+            <a href="#" class="bg-white p-6 rounded-2xl shadow-lg flex items-center justify-center text-center hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300">
+        {% endif %}
+                <h3 class="text-lg font-bold font-title text-secondary">{{ card_title }}</h3>
+            </a>
+    {% endfor %}
     </div>
 </div>
 {% endblock %}

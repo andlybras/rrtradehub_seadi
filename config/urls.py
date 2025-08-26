@@ -12,6 +12,7 @@ urlpatterns = [
     path('painel/', include('showcase_management.urls')),
     path('quero-comprar/', include('showcase_management.public_urls')),
     path('suporte/', include('support_management.urls')),
+    path('inteligencia/', include('intelligence_market.urls')),
 ]
 
 if settings.DEBUG:
