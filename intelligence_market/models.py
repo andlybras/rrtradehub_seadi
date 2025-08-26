@@ -32,7 +32,11 @@ class Chart(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nome Interno do Gráfico")
     slug = models.SlugField(unique=True, blank=True, help_text="Identificador único para o shortcode, gerado automaticamente.")
     
-    options_json = models.JSONField(verbose_name="Opções de Configuração (JSON do ECharts)")
+    options_json = models.JSONField(
+        verbose_name="Opções de Configuração (JSON do ECharts)",
+        # ADICIONE A LINHA ABAIXO
+        help_text="Cole aqui o JSON VÁLIDO. Dica: cole o código do exemplo do ECharts em uma IA (ChatGPT, Gemini, etc.) ou em um conversor online e peça para converter para JSON válido."
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
