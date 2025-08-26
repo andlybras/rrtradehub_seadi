@@ -3,10 +3,12 @@ from .models import AnalysisPage, Chart
 
 @admin.register(Chart)
 class ChartAdmin(admin.ModelAdmin):
-    # Voltamos a definir os campos que queremos ver diretamente aqui
-    fields = ('name', 'options_json')
+    # --- MUDANÇA AQUI ---
+    # Apenas trocamos 'options_json' por 'options_js'
+    fields = ('name', 'options_js') 
+    
     list_display = ('name', 'slug', 'shortcode_display')
-    readonly_fields = ('slug',) # O slug continua sendo gerado automaticamente
+    readonly_fields = ('slug',) 
     search_fields = ('name',)
 
     def shortcode_display(self, obj):

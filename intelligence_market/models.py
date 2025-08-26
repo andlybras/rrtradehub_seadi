@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 
 class AnalysisPage(models.Model):
+    # ... (nenhuma mudança aqui) ...
     """
     Representa uma página de análise completa, com conteúdo textual e gráficos.
     """
@@ -25,17 +26,19 @@ class AnalysisPage(models.Model):
         verbose_name_plural = "Páginas de Análise"
         ordering = ['-created_at']
 
+
 class Chart(models.Model):
     """
-    Armazena a definição de um gráfico ECharts (dados e opções de configuração).
+    Armazena a definição de um gráfico ECharts (código de opções em JavaScript).
     """
     name = models.CharField(max_length=100, verbose_name="Nome Interno do Gráfico")
     slug = models.SlugField(unique=True, blank=True, help_text="Identificador único para o shortcode, gerado automaticamente.")
     
-    options_json = models.JSONField(
-        verbose_name="Opções de Configuração (JSON do ECharts)",
-        # ADICIONE A LINHA ABAIXO
-        help_text="Cole aqui o JSON VÁLIDO. Dica: cole o código do exemplo do ECharts em uma IA (ChatGPT, Gemini, etc.) ou em um conversor online e peça para converter para JSON válido."
+    # --- MUDANÇA PRINCIPAL AQUI ---
+    # Trocamos JSONField por TextField e ajustamos os nomes e textos de ajuda.
+    options_js = models.TextField(
+        verbose_name="Opções de Configuração (Código JavaScript do ECharts)",
+        help_text="Cole aqui o objeto 'option' diretamente do exemplo do ECharts. Ex: { title: { text: 'Meu Gráfico' }, ... }"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
