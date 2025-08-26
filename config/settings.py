@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'company_management',
     'showcase_management',
     'site_assets',
+    'support_management',
 ]
 
 MIDDLEWARE = [
