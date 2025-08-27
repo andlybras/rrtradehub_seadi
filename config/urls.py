@@ -13,6 +13,7 @@ urlpatterns = [
     path('quero-comprar/', include('showcase_management.public_urls')),
     path('suporte/', include('support_management.urls')),
     path('inteligencia/', include('intelligence_market.urls')),
+    path('', include('learning_management.urls')),
 ]
 
 if settings.DEBUG:

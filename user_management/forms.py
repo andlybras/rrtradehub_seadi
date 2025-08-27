@@ -39,3 +39,44 @@ class UserChangeRequestForm(forms.ModelForm):
             'cnpj': forms.TextInput(attrs={'class': 'form-input'}),
             'email': forms.EmailInput(attrs={'class': 'form-input'}),
         }
+
+class EducationalUserCreationForm(forms.ModelForm):
+    password = forms.CharField(label='Senha', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirmação de Senha', widget=forms.PasswordInput)
+
+    class Meta:
+        model = CustomUser
+        fields = ('full_name', 'email', 'date_of_birth', 'education_level')
+        widgets = {
+            'date_of_birth': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-input'}
+            ),
+            'full_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'education_level': forms.Select(attrs={'class': 'form-input'}),
+        }
+
+    def clean_password2(self):
+        cd = self.cleaned_data
+        if cd.get('password') and cd.get('password2') and cd['password'] != cd['password2']:
+            raise forms.ValidationError('As senhas não coincidem.')
+        return cd.get('password2')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        user.user_type = CustomUser.UserType.EDUCATIONAL
+        
+        # Gera um username único baseado no email para evitar colisões
+        if not user.username:
+            email_prefix = user.email.split('@')[0]
+            user.username = email_prefix
+            # Garante que o username seja único
+            counter = 1
+            while CustomUser.objects.filter(username=user.username).exists():
+                user.username = f"{email_prefix}{counter}"
+                counter += 1
+
+        if commit:
+            user.save()
+        return user

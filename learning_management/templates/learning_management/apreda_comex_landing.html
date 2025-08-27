@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %} Aprenda Comex {% endblock %}
+
+{% block content %}
+<div class="flex flex-col lg:flex-row gap-8 items-stretch">
+
+    <div class="lg:w-2/3">
+        <div class="bg-white p-12 rounded-2xl shadow-lg h-full flex flex-col justify-center">
+            <h1 class="text-4xl font-bold font-title text-secondary mb-6">
+                Bem-vindo ao Aprenda Comex, seu centro de capacitação em comércio exterior!
+            </h1>
+            <div class="space-y-4 text-gray-700">
+                <p>
+                    Este é o seu ponto de partida para dominar o universo do comércio exterior. Desenvolvemos este ambiente de aprendizado para capacitar estudantes, profissionais e empreendedores de Roraima com o conhecimento necessário para navegar e prosperar no mercado global.
+                </p>
+                <p class="font-semibold">O que você encontrará aqui?</p>
+                <p>
+                    Cursos completos, trilhas de aprendizado, materiais de apoio e muito mais, tudo criado por especialistas para te guiar, desde os conceitos básicos até as estratégias mais avançadas.
+                </p>
+                <p class="text-lg font-semibold text-primary mt-4">
+                    Pronto para expandir seus horizontes?
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:w-1/3 flex flex-col gap-6 h-full">
+        
+        <a href="{% url 'user_management:register_educational' %}" class="flex-1 bg-primary text-white p-8 rounded-2xl shadow-lg hover:scale-105 transform transition-transform duration-300 flex items-center gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <h3 class="text-2xl font-bold font-title">Crie sua Conta Educacional</h3>
+        </a>
+
+        <a href="{% url 'user_management:login' %}" class="flex-1 bg-secondary text-white p-8 rounded-2xl shadow-lg hover:scale-105 transform transition-transform duration-300 flex items-center gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            <h3 class="text-2xl font-bold font-title">Já tenho uma conta</h3>
+        </a>
+
+        </div>
+
+</div>
+{% endblock %}

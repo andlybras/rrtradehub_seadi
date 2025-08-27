@@ -1,18 +1,21 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import BusinessUserCreationForm, UserChangeRequestForm
+from .forms import BusinessUserCreationForm, UserChangeRequestForm, EducationalUserCreationForm
 from .models import UserChangeRequest
 import json
 
 def home_page(request):
-    card_titles = [
-        "Inteligência de Mercado", "Acordos e Regulamentos", "Oportunidades",
-        "Aprenda Comex", "Destino Roraima", "Notícias"
+    cards = [
+        {'title': "Inteligência de Mercado", 'url': '#'},
+        {'title': "Acordos e Regulamentos", 'url': '#'},
+        {'title': "Oportunidades", 'url': '#'},
+        {'title': "Aprenda Comex", 'url': 'learning_management:apreda_comex_landing'},
+        {'title': "Destino Roraima", 'url': '#'},
+        {'title': "Notícias", 'url': '#'},
     ]
     context = {
-        'titulo_da_pagina': 'Bem-vindo ao nosso site!',
-        'card_titles': card_titles,
+        'cards': cards,
     }
     return render(request, 'home.html', context)
 
@@ -32,6 +35,18 @@ def register_business(request):
         form = BusinessUserCreationForm()
     
     return render(request, 'user_management/register_business.html', {'form': form})
+
+def register_educational(request):
+    if request.method == 'POST':
+        form = EducationalUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, f'Conta criada com sucesso para {user.full_name}! Você já pode fazer o login.')
+            return redirect('user_management:login') # Redireciona para o login
+    else:
+        form = EducationalUserCreationForm()
+    
+    return render(request, 'user_management/register_educational.html', {'form': form})
 
 @login_required
 def dashboard(request):
