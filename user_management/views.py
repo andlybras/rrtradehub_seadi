@@ -7,7 +7,7 @@ import json
 
 def home_page(request):
     cards = [
-        {'title': "Inteligência de Mercado", 'url': '#'},
+        {'title': "Inteligência de Mercado", 'url': 'intelligence_market:indicator_list'},
         {'title': "Acordos e Regulamentos", 'url': '#'},
         {'title': "Oportunidades", 'url': '#'},
         {'title': "Aprenda Comex", 'url': 'learning_management:apreda_comex_landing'},
