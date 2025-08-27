@@ -1,3 +1,19 @@
-echo "venv/" > .gitignore
-echo "__pycache__/" >> .gitignore
-echo "*.pyc" >> .gitignore
+# Arquivos de Cache e Bytecode do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambiente Virtual
+venv/
+env/
+.venv/
+
+# Banco de Dados de Desenvolvimento
+db.sqlite3
+
+# Arquivos de Mídia enviados pelos usuários
+/media/
+
+# Outros
+.DS_Store
