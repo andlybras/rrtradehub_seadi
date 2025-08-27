@@ -41,13 +41,23 @@ class UserChangeRequestForm(forms.ModelForm):
         }
 
 class EducationalUserCreationForm(forms.ModelForm):
-    password = forms.CharField(label='Senha', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirmação de Senha', widget=forms.PasswordInput)
+    password = forms.CharField(
+        label='Senha', 
+        widget=forms.PasswordInput(attrs={'class': 'form-input'}) # Adicione attrs aqui
+    )
+    password2 = forms.CharField(
+        label='Confirmação de Senha', 
+        widget=forms.PasswordInput(attrs={'class': 'form-input'}) # E aqui também
+    )
+
 
     class Meta:
         model = CustomUser
-        fields = ('full_name', 'email', 'date_of_birth', 'education_level')
+        # ADICIONE 'username' A ESTA LISTA
+        fields = ('username', 'full_name', 'email', 'date_of_birth', 'education_level')
         widgets = {
+            # ADICIONE O WIDGET PARA 'username'
+            'username': forms.TextInput(attrs={'class': 'form-input'}),
             'date_of_birth': forms.DateInput(
                 attrs={'type': 'date', 'class': 'form-input'}
             ),
@@ -57,6 +67,7 @@ class EducationalUserCreationForm(forms.ModelForm):
         }
 
     def clean_password2(self):
+        # ... (este método não muda)
         cd = self.cleaned_data
         if cd.get('password') and cd.get('password2') and cd['password'] != cd['password2']:
             raise forms.ValidationError('As senhas não coincidem.')
@@ -67,15 +78,8 @@ class EducationalUserCreationForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         user.user_type = CustomUser.UserType.EDUCATIONAL
         
-        # Gera um username único baseado no email para evitar colisões
-        if not user.username:
-            email_prefix = user.email.split('@')[0]
-            user.username = email_prefix
-            # Garante que o username seja único
-            counter = 1
-            while CustomUser.objects.filter(username=user.username).exists():
-                user.username = f"{email_prefix}{counter}"
-                counter += 1
+        # REMOVA O BLOCO DE CÓDIGO QUE GERAVA O USERNAME AUTOMATICAMENTE
+        # O username agora virá diretamente do formulário.
 
         if commit:
             user.save()
