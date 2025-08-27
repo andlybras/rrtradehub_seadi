@@ -50,7 +50,17 @@ def register_educational(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'user_management/dashboard.html')
+    user = request.user
+    if user.user_type == 'BUSINESS':
+        # Mantém o comportamento atual para usuários empresariais
+        return render(request, 'user_management/dashboard.html')
+    elif user.user_type == 'EDUCATIONAL':
+        # Redireciona para o novo painel educacional
+        return redirect('learning_management:educational_dashboard')
+    else:
+        # Você pode adicionar um comportamento padrão ou uma página de erro aqui
+        # Por enquanto, vamos redirecionar para a home
+        return redirect('home')
 
 @login_required
 def user_profile(request):

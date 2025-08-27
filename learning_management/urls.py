@@ -7,4 +7,5 @@ app_name = 'learning_management'
 
 urlpatterns = [
     path('aprenda-comex/', views.aprenda_comex_landing, name='apreda_comex_landing'),
+    path('painel-educacional/', views.educational_dashboard, name='educational_dashboard'),
 ]
