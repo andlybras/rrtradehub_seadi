@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %} Registro Educacional {% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <h2 class="text-3xl font-bold text-center text-secondary mb-8 font-title">Crie sua Conta Educacional</h2>
+    <p class="text-center text-gray-600 mb-8">Acesse nossos cursos e materiais exclusivos.</p>
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="space-y-6">
+            <div>
+                <label for="{{ form.full_name.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-700">{{ form.full_name.label }}</label>
+                {{ form.full_name }}
+                {% for error in form.full_name.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-700">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.date_of_birth.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-700">{{ form.date_of_birth.label }}</label>
+                    {{ form.date_of_birth }}
+                    {% for error in form.date_of_birth.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    <label for="{{ form.education_level.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-700">{{ form.education_level.label }}</label>
+                    {{ form.education_level }}
+                    {% for error in form.education_level.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-700">{{ form.password.label }}</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div>
+                <label for="{{ form.password2.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-700">{{ form.password2.label }}</label>
+                {{ form.password2 }}
+                {% for error in form.password2.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity">
+            Criar Conta
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background-color: #F9FAFB;
+        margin-top: 0.25rem;
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: #41A2C5;
+        box-shadow: 0 0 0 3px rgba(65, 162, 197, 0.3);
+        background-color: white;
+    }
+</style>
+{% endblock %}

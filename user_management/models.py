@@ -3,16 +3,35 @@ from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.apps import apps
+from django import forms
 
 class CustomUser(AbstractUser):
     class UserType(models.TextChoices):
         LICENSEE = 'LICENSEE', 'Permissionário'
         BUSINESS = 'BUSINESS', 'Perfil Empresarial'
+        EDUCATIONAL = 'EDUCATIONAL', 'Perfil Educacional'
 
-    user_type = models.CharField(max_length=10, choices=UserType.choices, verbose_name='Tipo de Usuário')
+    class EducationLevel(models.TextChoices):
+        ENSINO_FUNDAMENTAL = 'FUNDAMENTAL', 'Ensino Fundamental'
+        ENSINO_MEDIO = 'MEDIO', 'Ensino Médio'
+        ENSINO_SUPERIOR = 'SUPERIOR', 'Ensino Superior'
+        POS_GRADUACAO = 'POS_GRADUACAO', 'Pós-Graduação'
+        OUTRO = 'OUTRO', 'Outro'
+        
+    user_type = models.CharField(max_length=11, choices=UserType.choices, verbose_name='Tipo de Usuário')
     razao_social = models.CharField(max_length=255, blank=True, null=True, verbose_name='Razão Social')
     nome_fantasia = models.CharField(max_length=255, blank=True, null=True, verbose_name='Nome Fantasia')
     cnpj = models.CharField(max_length=18, blank=True, null=True, unique=True, verbose_name='CNPJ')
+    
+    full_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Nome Completo')
+    date_of_birth = models.DateField(blank=True, null=True, verbose_name='Data de Nascimento')
+    education_level = models.CharField(
+        max_length=20,
+        choices=EducationLevel.choices,
+        blank=True,
+        null=True,
+        verbose_name='Escolaridade'
+    )
 
     def __str__(self):
         return self.username

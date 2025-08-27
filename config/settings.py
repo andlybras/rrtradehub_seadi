@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'site_assets',
     'support_management',
     'intelligence_market',
+    'learning_management',
 ]
 
 MIDDLEWARE = [
