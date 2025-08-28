@@ -10,7 +10,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.ngrok-free.app', '18.228.117.135']
+ALLOWED_HOSTS_STR = os.getenv('DJANGO_ALLOWED_HOSTS', '')
+
+ALLOWED_HOSTS = ALLOWED_HOSTS_STR.split(',') if ALLOWED_HOSTS_STR else []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
