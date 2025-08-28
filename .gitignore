@@ -17,3 +17,4 @@ db.sqlite3
 
 # Outros
 .DS_Store
+.env
