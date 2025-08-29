@@ -1,4 +1,4 @@
-/* core/static/core/css/reception.css - VERSÃO COM IMAGEM MAIOR */
+/* core/static/core/css/reception.css - VERSÃO COM TEXTO NA FRENTE */
 
 /* Configurações Globais */
 body, html {
@@ -14,7 +14,7 @@ body, html {
     background-size: cover; background-position: center; z-index: -1;
 }
 
-/* Container de vidro - AGORA COM OVERFLOW: HIDDEN */
+/* Container de vidro */
 .glass-container {
     width: 100%; height: 100%; padding: 0; box-sizing: border-box;
     background: rgba(255, 255, 255, 0.15);
@@ -22,7 +22,7 @@ body, html {
     border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex; align-items: center; justify-content: center;
     color: white;
-    overflow: hidden; /* ALTERADO: Esta é a tesoura que corta o que vaza */
+    overflow: hidden;
 }
 
 /* Wrapper do conteúdo */
@@ -35,37 +35,36 @@ body, html {
 .column {
     width: 50%; height: 100%; display: flex;
     flex-direction: column; box-sizing: border-box;
+    position: relative; /* Adicionado para que z-index funcione corretamente em suas sub-divs */
 }
 
-/* Coluna da Esquerda (Imagem) - COM POSIÇÃO RELATIVA */
+/* Coluna da Esquerda (Imagem) */
 .column-left {
-    position: relative; /* ALTERADO: Para melhor controle da imagem */
+    z-index: 1; /* ALTERADO: A imagem ficará em uma camada mais baixa */
 }
 
-/* Coluna da Direita (Texto) */
+/* Coluna da Direita (Texto) - COM Z-INDEX MAIOR */
 .column-right {
     align-items: flex-start; text-align: left;
     justify-content: center; padding: 40px;
+    z-index: 2; /* ALTERADO: O texto ficará em uma camada mais alta */
 }
 
 /* Estilo do Slider de Imagens */
 .image-slider {
-    width: 100%; height: 100%; position: static; /* Ajustado */
+    width: 100%; height: 100%; position: static;
 }
 
-/* Imagem - MAIOR, SEM LARGURA MÁXIMA E REPOSICIONADA */
+/* Imagem */
 .image-slider img {
     position: absolute; bottom: 0;
-    
-    /* ALTERADO: Reposicionamento para causar o vazamento */
     left: 45%; 
     transform: translateX(-50%);
-
-    /* ALTERADO: Força a imagem a ser maior que o container */
-    height: 105%; /* Um pouco maior que 100% para garantir o preenchimento */
+    
+    height: 105%;
     width: auto;
-    min-width: 100%; /* Garante que a largura nunca seja menor que a coluna */
-    max-width: none; /* REMOVIDO: A restrição que estava te limitando */
+    min-width: 100%;
+    max-width: none;
 
     object-fit: contain; object-position: bottom;
     opacity: 0; transition: opacity 1.5s ease-in-out;
@@ -83,14 +82,14 @@ body, html {
 .lang-button:hover { background-color: white; color: #012f6c; }
 
 
-/* --- SEÇÃO DE RESPONSIVIDADE (sem alterações) --- */
+/* --- SEÇÃO DE RESPONSIVIDADE --- */
 @media (max-width: 800px) {
     body, html { padding: 10px; overflow: auto; }
     .content-wrapper { flex-direction: column-reverse; justify-content: flex-start; text-align: center; gap: 0; }
     .column { width: 100%; height: auto; }
-    .column-right { height: 45vh; padding: 20px; align-items: center; text-align: center; }
-    .column-left { height: 55vh; }
-    .image-slider img { min-height: 67%; height: auto; max-width: 100%; left: 50%; /* Re-centraliza em telas menores */ }
+    .column-right { height: 45vh; padding: 20px; align-items: center; text-align: center; z-index: 2; } /* z-index também aqui para garantir */
+    .column-left { height: 55vh; z-index: 1; } /* z-index também aqui para garantir */
+    .image-slider img { min-height: 67%; height: auto; max-width: 100%; left: 50%; transform: translateX(-50%); } /* Re-centraliza em telas menores */
     .column-right h1 { font-size: 2.5em; }
     .column-right p { font-size: 1.2em; margin-bottom: 20px; }
     .language-selector-wrapper { align-items: center; }
