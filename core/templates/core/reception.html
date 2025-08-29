@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo ao Roraima Trade Hub</title>
+    <link rel="stylesheet" href="{% static 'core/css/reception.css' %}">
+</head>
+<body>
+
+    <div class="background-container"></div>
+
+    <main class="glass-container">
+        <div class="image-slider">
+            <img src="{% static 'core/images/cacau.png' %}" alt="Imagem representativa 1" class="active">
+            <img src="{% static 'core/images/soja.png' %}" alt="Imagem representativa 2">
+            <img src="{% static 'core/images/mandioca.png' %}" alt="Imagem representativa 3">
+            <img src="{% static 'core/images/banana.png' %}" alt="Imagem representativa 4">
+        </div>
+
+        <h1>Roraima Trade Hub</h1>
+        <p>Conectando Roraima ao mundo.</p>
+
+        <div class="language-selector">
+            <a href="/plataforma/" class="lang-button">Português</a>
+            <a href="/plataforma/" class="lang-button">English</a>
+            <a href="/plataforma/" class="lang-button">Español</a>
+        </div>
+    </main>
+    <script src="{% static 'core/js/reception.js' %}"></script>
+</body>
+</html>
