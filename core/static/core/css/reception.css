@@ -1,90 +1,133 @@
-/* core/static/core/css/reception.css */
+/* core/static/core/css/reception.css - VERSÃO ATUALIZADA */
 
-/* Configurações Globais */
+/* Configurações Globais e o "Gap" nas laterais */
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden; /* Evita barras de rolagem */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
+    /* Adicionamos padding para criar o vão nas bordas */
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-/* Camada do fundo com a bandeira e o overlay azul */
+/* Camada do fundo com a nova cor */
 .background-container {
-    position: absolute;
+    position: fixed; /* Usamos fixed para garantir que cubra tudo */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* Use a imagem da bandeira que já temos */
-    background-image: linear-gradient(rgba(1, 47, 108, 0.8), rgba(1, 47, 108, 0.8)), url('../images/bandeira-fundo.jpg');
+    /* NOVA COR: #41A2C5 com 70% de opacidade */
+    background-image: linear-gradient(rgba(65, 162, 197, 0.7), rgba(65, 162, 197, 0.7)), url('../images/bandeira-fundo.jpg');
     background-size: cover;
     background-position: center;
-    z-index: -1; /* Fica atrás de todo o conteúdo */
+    z-index: -1;
 }
 
-/* O container com efeito de vidro (Glassmorphism) */
+/* Container de vidro ocupando quase toda a tela */
 .glass-container {
-    width: 90%;
-    max-width: 600px;
-    padding: 40px;
+    width: 100%;
+    height: 100%;
+    padding: 30px;
     box-sizing: border-box;
 
-    background: rgba(255, 255, 255, 0.1); /* Fundo branco semi-transparente */
-    backdrop-filter: blur(15px); /* O efeito de desfoque mágico */
-    -webkit-backdrop-filter: blur(15px); /* Para compatibilidade com Safari */
+    background: rgba(255, 255, 255, 0.15); /* Aumentei um pouco a opacidade para melhor leitura */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
+    justify-content: center;
     color: white;
 }
 
-/* Estilo do Slider de Imagens */
+/* --- NOVOS ESTILOS PARA AS DUAS COLUNAS --- */
+
+/* Wrapper do conteúdo */
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    gap: 40px; /* Espaço entre as colunas */
+}
+
+.column {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Coluna da direita com alinhamento de texto à esquerda */
+.column-right {
+    align-items: flex-start;
+    text-align: left;
+}
+
+/* --- FIM DOS ESTILOS DE COLUNAS --- */
+
+
+/* Estilo do Slider de Imagens (MAIOR) */
 .image-slider {
     width: 100%;
-    height: 200px; /* Ajuste a altura conforme suas imagens */
+    height: 90%; /* Ocupa 90% da altura da coluna */
     position: relative;
-    margin-bottom: 20px;
 }
 
 .image-slider img {
     position: absolute;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%); /* Centraliza a imagem perfeitamente */
     max-height: 100%;
     max-width: 100%;
-    opacity: 0; /* Todas as imagens começam invisíveis */
-    transition: opacity 1.5s ease-in-out; /* Transição suave de opacidade */
+    object-fit: contain; /* Garante que a imagem caiba sem distorcer */
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
 }
 
 .image-slider img.active {
-    opacity: 1; /* A imagem ativa fica visível */
+    opacity: 1;
 }
 
-/* Estilo dos Textos */
-.glass-container h1 {
-    font-size: 2.5em;
-    margin: 10px 0;
-    font-weight: 600;
+/* Estilo dos Textos (maiores e mais imponentes) */
+.column-right h1 {
+    font-size: 4.5em; /* Aumentamos o título */
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.1;
 }
 
-.glass-container p {
-    font-size: 1.2em;
-    margin-bottom: 30px;
+.column-right p {
+    font-size: 1.5em;
+    margin-top: 15px;
+    margin-bottom: 40px;
     font-weight: 300;
 }
 
-/* Estilo dos Botões de Idioma */
+/* Estilo do Seletor de Idioma */
+.language-selector-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.language-label {
+    font-size: 1em;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
 .language-selector {
     display: flex;
-    gap: 15px; /* Espaço entre os botões */
+    gap: 15px;
 }
 
 .lang-button {
@@ -98,5 +141,5 @@ body, html {
 
 .lang-button:hover {
     background-color: white;
-    color: #012f6c; /* Azul escuro do fundo */
+    color: #012f6c;
 }

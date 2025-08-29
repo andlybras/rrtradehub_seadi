@@ -12,22 +12,32 @@
     <div class="background-container"></div>
 
     <main class="glass-container">
-        <div class="image-slider">
-            <img src="{% static 'core/images/cacau.png' %}" alt="Imagem representativa 1" class="active">
-            <img src="{% static 'core/images/soja.png' %}" alt="Imagem representativa 2">
-            <img src="{% static 'core/images/mandioca.png' %}" alt="Imagem representativa 3">
-            <img src="{% static 'core/images/banana.png' %}" alt="Imagem representativa 4">
+    <div class="content-wrapper">
+
+        <div class="column column-left">
+            <div class="image-slider">
+                <img src="{% static 'core/images/cacau.png' %}" alt="Produção de Cacau em Roraima" class="active">
+                <img src="{% static 'core/images/mandioca.png' %}" alt="Produção de Mandioca em Roraima">
+                <img src="{% static 'core/images/banana.png' %}" alt="Produção de Banana em Roraima">
+            </div>
         </div>
 
-        <h1>Roraima Trade Hub</h1>
-        <p>Conectando Roraima ao mundo.</p>
+        <div class="column column-right">
+            <h1>Roraima Trade Hub</h1>
+            <p>O comércio de Roraima com o mundo.</p>
 
-        <div class="language-selector">
-            <a href="/plataforma/" class="lang-button">Português</a>
-            <a href="/plataforma/" class="lang-button">English</a>
-            <a href="/plataforma/" class="lang-button">Español</a>
+            <div class="language-selector-wrapper">
+                <label class="language-label">Escolha seu idioma:</label>
+                <div class="language-selector">
+                    <a href="/plataforma/" class="lang-button">Português</a>
+                    <a href="/plataforma/" class="lang-button">English</a>
+                    <a href="/plataforma/" class="lang-button">Español</a>
+                </div>
+            </div>
         </div>
-    </main>
+
+    </div>
+</main>
     <script src="{% static 'core/js/reception.js' %}"></script>
 </body>
 </html>
