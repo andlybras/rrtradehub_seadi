@@ -88,7 +88,7 @@ body, html {
     transform: translateX(-50%);
     
     /* ALTERADO: Define a altura mínima e máxima */
-    min-height: 67%; /* Pelo menos 2/3 da altura do container */
+    min-height: 100%; /* Pelo menos 2/3 da altura do container */
     max-height: 100%; /* No máximo 100% da altura */
 
     width: auto;
