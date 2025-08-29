@@ -1,43 +1,37 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo ao Roraima Trade Hub</title>
+    <title>{% translate "Bem-vindo ao Roraima Trade Hub" %}</title>
     <link rel="stylesheet" href="{% static 'core/css/reception.css' %}">
 </head>
 <body>
-
     <div class="background-container"></div>
-
     <main class="glass-container">
-    <div class="content-wrapper">
-
-        <div class="column column-left">
-            <div class="image-slider">
-                <img src="{% static 'core/images/cacau.png' %}" alt="Produção de Cacau em Roraima" class="active">
-                <img src="{% static 'core/images/mandioca.png' %}" alt="Produção de Mandioca em Roraima">
-                <img src="{% static 'core/images/banana.png' %}" alt="Produção de Banana em Roraima">
+        <div class="content-wrapper">
+            <div class="column column-left">
+                <div class="image-slider">
+                    <img src="{% static 'core/images/cacau.png' %}" alt="{% translate 'Produção de Cacau em Roraima' %}" class="active">
+                    <img src="{% static 'core/images/mandioca.png' %}" alt="{% translate 'Produção de Mandioca em Roraima' %}">
+                    <img src="{% static 'core/images/banana.png' %}" alt="{% translate 'Produção de Banana em Roraima' %}">
+                </div>
             </div>
-        </div>
-
-        <div class="column column-right">
-            <h1>Roraima Trade Hub</h1>
-            <p>O comércio de Roraima com o mundo.</p>
-
-            <div class="language-selector-wrapper">
-                <label class="language-label">Escolha seu idioma:</label>
-                <div class="language-selector">
-                    <a href="/plataforma/" class="lang-button">Português</a>
-                    <a href="/plataforma/" class="lang-button">English</a>
-                    <a href="/plataforma/" class="lang-button">Español</a>
+            <div class="column column-right">
+                <h1>Roraima Trade Hub</h1>
+                <p>{% translate "O comércio de Roraima com o mundo." %}</p>
+                <div class="language-selector-wrapper">
+                    <label class="language-label">{% translate "Escolha seu idioma:" %}</label>
+                    <div class="language-selector">
+                        <a href="/pt-br/plataforma/" class="lang-button">Português</a>
+                        <a href="/en/plataforma/" class="lang-button">English</a>
+                        <a href="/es/plataforma/" class="lang-button">Español</a>
+                    </div>
                 </div>
             </div>
         </div>
-
-    </div>
-</main>
+    </main>
     <script src="{% static 'core/js/reception.js' %}"></script>
 </body>
 </html>
