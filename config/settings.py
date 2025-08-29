@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'intelligence_market',
     'learning_management',
     'storages',
+    'core',
 ]
 
 MIDDLEWARE = [
