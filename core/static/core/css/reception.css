@@ -1,4 +1,4 @@
-/* core/static/core/css/reception.css - VERSÃO FINAL */
+/* core/static/core/css/reception.css - VERSÃO FINAL CORRIGIDA */
 
 /* Configurações Globais e o "Gap" nas laterais */
 body, html {
@@ -11,7 +11,7 @@ body, html {
     box-sizing: border-box;
 }
 
-/* Camada do fundo com a cor ajustada */
+/* Camada do fundo */
 .background-container {
     position: fixed;
     top: 0;
@@ -24,11 +24,11 @@ body, html {
     z-index: -1;
 }
 
-/* Container de vidro */
+/* Container de vidro - SEM PADDING INTERNO */
 .glass-container {
     width: 100%;
     height: 100%;
-    padding: 30px;
+    padding: 0; /* ALTERADO: Removemos o padding daqui */
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(15px);
@@ -41,7 +41,7 @@ body, html {
     color: white;
 }
 
-/* Wrapper do conteúdo */
+/* Wrapper do conteúdo - Controla os espaçamentos internos */
 .content-wrapper {
     display: flex;
     align-items: center;
@@ -51,46 +51,50 @@ body, html {
     gap: 40px;
 }
 
+/* Colunas */
 .column {
     width: 50%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    /* A propriedade 'justify-content' foi removida daqui para ser aplicada especificamente */
+    box-sizing: border-box; /* Adicionado para garantir consistência */
 }
 
+/* Coluna da Esquerda (Imagem) */
 .column-left {
-    /* Nova regra para forçar o alinhamento do conteúdo na base (final do eixo) */
     justify-content: flex-end;
 }
 
+/* Coluna da Direita (Texto) - AGORA COM PADDING INTERNO */
 .column-right {
     align-items: flex-start;
     text-align: left;
-    /* A centralização vertical agora se aplica somente à coluna de texto */
     justify-content: center;
+    padding: 40px; /* ALTERADO: Adicionamos o espaçamento aqui */
 }
 
-/* Estilo do Slider de Imagens (MAIOR e ALINHADO ABAIXO) */
+/* Estilo do Slider de Imagens */
 .image-slider {
     width: 100%;
-    height: 100%; /* Ocupa 100% da altura da coluna */
+    height: 100%;
     position: relative;
 }
 
+/* Imagem - Com altura mínima e alinhada perfeitamente */
 .image-slider img {
     position: absolute;
-    /* ALTERADO: Alinhamento na base */
     bottom: 0;
     left: 50%;
-    transform: translateX(-50%); /* Apenas centraliza horizontalmente */
-
-    height: 100%; /* Força a imagem a ter a altura máxima do container */
-    width: auto; /* Largura se ajusta para manter a proporção */
-    max-width: 100%; /* Garante que não ultrapasse a largura */
+    transform: translateX(-50%);
     
+    /* ALTERADO: Define a altura mínima e máxima */
+    min-height: 67%; /* Pelo menos 2/3 da altura do container */
+    max-height: 100%; /* No máximo 100% da altura */
+
+    width: auto;
+    max-width: 100%;
     object-fit: contain;
-    object-position: bottom; /* Garante que a imagem se alinhe pela base */
+    object-position: bottom;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
 }
@@ -99,98 +103,55 @@ body, html {
     opacity: 1;
 }
 
-/* Estilo dos Textos */
-.column-right h1 {
-    font-size: 4.5em;
-    margin: 0;
-    font-weight: 700;
-    line-height: 1.1;
-}
+/* Estilos de Texto */
+.column-right h1 { font-size: 4.5em; margin: 0; font-weight: 700; line-height: 1.1; }
+.column-right p { font-size: 1.5em; margin-top: 15px; margin-bottom: 40px; font-weight: 300; }
 
-.column-right p {
-    font-size: 1.5em;
-    margin-top: 15px;
-    margin-bottom: 40px;
-    font-weight: 300;
-}
-
-/* Estilo do Seletor de Idioma */
-.language-selector-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.language-label {
-    font-size: 1em;
-    margin-bottom: 15px;
-    opacity: 0.8;
-}
-
-.language-selector {
-    display: flex;
-    gap: 15px;
-}
-
-.lang-button {
-    text-decoration: none;
-    color: white;
-    padding: 10px 20px;
-    border: 1px solid white;
-    border-radius: 20px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.lang-button:hover {
-    background-color: white;
-    color: #012f6c;
-}
+/* Estilos de Botões */
+.language-selector-wrapper { display: flex; flex-direction: column; align-items: flex-start; }
+.language-label { font-size: 1em; margin-bottom: 15px; opacity: 0.8; }
+.language-selector { display: flex; gap: 15px; }
+.lang-button { text-decoration: none; color: white; padding: 10px 20px; border: 1px solid white; border-radius: 20px; transition: background-color 0.3s, color 0.3s; }
+.lang-button:hover { background-color: white; color: #012f6c; }
 
 
-/* --- NOVO: SEÇÃO DE RESPONSIVIDADE PARA TELAS MENORES --- */
+/* --- SEÇÃO DE RESPONSIVIDADE ATUALIZADA --- */
 
 @media (max-width: 800px) {
     body, html {
-        padding: 10px; /* Diminui o vão nas laterais */
-        overflow: auto; /* Permite rolar a tela se o conteúdo for grande */
-    }
-
-    .glass-container {
-        padding: 20px;
+        padding: 10px;
+        overflow: auto;
     }
 
     .content-wrapper {
-        /* Inverte a ordem das colunas e as empilha */
-        flex-direction: column-reverse; 
+        flex-direction: column-reverse;
         justify-content: flex-start;
         text-align: center;
         gap: 0;
     }
 
     .column {
-        width: 100%; /* Colunas ocupam a largura total */
+        width: 100%;
         height: auto;
     }
 
     .column-right {
-        align-items: center; /* Centraliza os textos */
+        height: 45vh; /* Diminuído um pouco para dar mais espaço à imagem */
+        padding: 20px;
+        align-items: center;
         text-align: center;
-        height: 50vh; /* Ocupa metade da altura da tela */
     }
 
     .column-left {
-        height: 50vh; /* Ocupa a outra metade */
+        height: 55vh; /* Aumentado um pouco para a imagem ter mais destaque */
     }
 
-    .column-right h1 {
-        font-size: 2.5em; /* Diminui o título para caber melhor */
+    .image-slider img {
+      /* Garante que a regra de 2/3 também se aplique aqui */
+      min-height: 67%;
     }
 
-    .column-right p {
-        font-size: 1.2em;
-    }
-
-    .language-selector-wrapper {
-        align-items: center; /* Centraliza os botões */
-    }
+    .column-right h1 { font-size: 2.5em; }
+    .column-right p { font-size: 1.2em; margin-bottom: 20px; }
+    .language-selector-wrapper { align-items: center; }
 }
