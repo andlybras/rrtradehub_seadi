@@ -103,6 +103,10 @@ LANGUAGES = [
     ('es', _('Spanish')),
 ]
 
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
 LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'America/Boa_Vista'
