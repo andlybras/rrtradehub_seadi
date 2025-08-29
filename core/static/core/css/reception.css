@@ -56,12 +56,19 @@ body, html {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* A propriedade 'justify-content' foi removida daqui para ser aplicada especificamente */
+}
+
+.column-left {
+    /* Nova regra para forçar o alinhamento do conteúdo na base (final do eixo) */
+    justify-content: flex-end;
 }
 
 .column-right {
     align-items: flex-start;
     text-align: left;
+    /* A centralização vertical agora se aplica somente à coluna de texto */
+    justify-content: center;
 }
 
 /* Estilo do Slider de Imagens (MAIOR e ALINHADO ABAIXO) */
