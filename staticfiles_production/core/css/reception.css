@@ -148,7 +148,7 @@ body, html {
 
     .image-slider img {
       /* Garante que a regra de 2/3 também se aplique aqui */
-      min-height: 67%;
+      min-height: 100%;
     }
 
     .column-right h1 { font-size: 2.5em; }
