@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.utils.translation import gettext_lazy as _
 
 load_dotenv()
 
@@ -94,6 +95,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+LANGUAGES = [
+    ('pt-br', _('Brazilian Portuguese')),
+    ('en', _('English')),
+    ('es', _('Spanish')),
 ]
 
 LANGUAGE_CODE = 'pt-br'
