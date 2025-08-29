@@ -23,6 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // 3. Adiciona a classe 'active' na nova imagem, fazendo-a aparecer
             images[currentIndex].classList.add('active');
 
-        }, 4000); // A troca acontece a cada 4 segundos (4000 milissegundos)
+        }, 8000); // A troca acontece a cada 4 segundos (4000 milissegundos)
     }
 });

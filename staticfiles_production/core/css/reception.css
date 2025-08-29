@@ -1,4 +1,4 @@
-/* core/static/core/css/reception.css - VERSÃO ATUALIZADA */
+/* core/static/core/css/reception.css - VERSÃO FINAL */
 
 /* Configurações Globais e o "Gap" nas laterais */
 body, html {
@@ -7,45 +7,39 @@ body, html {
     height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
-    /* Adicionamos padding para criar o vão nas bordas */
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* Camada do fundo com a nova cor */
+/* Camada do fundo com a cor ajustada */
 .background-container {
-    position: fixed; /* Usamos fixed para garantir que cubra tudo */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* NOVA COR: #41A2C5 com 70% de opacidade */
     background-image: linear-gradient(rgba(65, 162, 197, 0.7), rgba(65, 162, 197, 0.7)), url('../images/bandeira-fundo.jpg');
     background-size: cover;
     background-position: center;
     z-index: -1;
 }
 
-/* Container de vidro ocupando quase toda a tela */
+/* Container de vidro */
 .glass-container {
     width: 100%;
     height: 100%;
     padding: 30px;
     box-sizing: border-box;
-
-    background: rgba(255, 255, 255, 0.15); /* Aumentei um pouco a opacidade para melhor leitura */
+    background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
 }
-
-/* --- NOVOS ESTILOS PARA AS DUAS COLUNAS --- */
 
 /* Wrapper do conteúdo */
 .content-wrapper {
@@ -54,7 +48,7 @@ body, html {
     justify-content: space-between;
     width: 100%;
     height: 100%;
-    gap: 40px; /* Espaço entre as colunas */
+    gap: 40px;
 }
 
 .column {
@@ -65,30 +59,31 @@ body, html {
     justify-content: center;
 }
 
-/* Coluna da direita com alinhamento de texto à esquerda */
 .column-right {
     align-items: flex-start;
     text-align: left;
 }
 
-/* --- FIM DOS ESTILOS DE COLUNAS --- */
-
-
-/* Estilo do Slider de Imagens (MAIOR) */
+/* Estilo do Slider de Imagens (MAIOR e ALINHADO ABAIXO) */
 .image-slider {
     width: 100%;
-    height: 90%; /* Ocupa 90% da altura da coluna */
+    height: 100%; /* Ocupa 100% da altura da coluna */
     position: relative;
 }
 
 .image-slider img {
     position: absolute;
-    top: 50%;
+    /* ALTERADO: Alinhamento na base */
+    bottom: 0;
     left: 50%;
-    transform: translate(-50%, -50%); /* Centraliza a imagem perfeitamente */
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain; /* Garante que a imagem caiba sem distorcer */
+    transform: translateX(-50%); /* Apenas centraliza horizontalmente */
+
+    height: 100%; /* Força a imagem a ter a altura máxima do container */
+    width: auto; /* Largura se ajusta para manter a proporção */
+    max-width: 100%; /* Garante que não ultrapasse a largura */
+    
+    object-fit: contain;
+    object-position: bottom; /* Garante que a imagem se alinhe pela base */
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
 }
@@ -97,9 +92,9 @@ body, html {
     opacity: 1;
 }
 
-/* Estilo dos Textos (maiores e mais imponentes) */
+/* Estilo dos Textos */
 .column-right h1 {
-    font-size: 4.5em; /* Aumentamos o título */
+    font-size: 4.5em;
     margin: 0;
     font-weight: 700;
     line-height: 1.1;
@@ -142,4 +137,53 @@ body, html {
 .lang-button:hover {
     background-color: white;
     color: #012f6c;
+}
+
+
+/* --- NOVO: SEÇÃO DE RESPONSIVIDADE PARA TELAS MENORES --- */
+
+@media (max-width: 800px) {
+    body, html {
+        padding: 10px; /* Diminui o vão nas laterais */
+        overflow: auto; /* Permite rolar a tela se o conteúdo for grande */
+    }
+
+    .glass-container {
+        padding: 20px;
+    }
+
+    .content-wrapper {
+        /* Inverte a ordem das colunas e as empilha */
+        flex-direction: column-reverse; 
+        justify-content: flex-start;
+        text-align: center;
+        gap: 0;
+    }
+
+    .column {
+        width: 100%; /* Colunas ocupam a largura total */
+        height: auto;
+    }
+
+    .column-right {
+        align-items: center; /* Centraliza os textos */
+        text-align: center;
+        height: 50vh; /* Ocupa metade da altura da tela */
+    }
+
+    .column-left {
+        height: 50vh; /* Ocupa a outra metade */
+    }
+
+    .column-right h1 {
+        font-size: 2.5em; /* Diminui o título para caber melhor */
+    }
+
+    .column-right p {
+        font-size: 1.2em;
+    }
+
+    .language-selector-wrapper {
+        align-items: center; /* Centraliza os botões */
+    }
 }
