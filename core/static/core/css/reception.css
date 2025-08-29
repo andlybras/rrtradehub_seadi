@@ -155,6 +155,10 @@ body, html {
         overflow: auto; /* Permite rolar a tela se o conteúdo for grande */
     }
 
+    .glass-container {
+        padding: 20px;
+    }
+
     .content-wrapper {
         /* Inverte a ordem das colunas e as empilha */
         flex-direction: column-reverse; 
