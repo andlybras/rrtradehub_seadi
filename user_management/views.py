@@ -1,12 +1,21 @@
-from django.shortcuts import render, redirect
+# user_management/views.py
+
+import json
+import random
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import BusinessUserCreationForm, UserChangeRequestForm, EducationalUserCreationForm, timezone
-from .models import UserChangeRequest, CustomUser
-import json
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.urls import reverse
+# CORREÇÃO: Importando timezone da maneira correta
+from django.utils import timezone
+
+from .forms import (BusinessUserCreationForm, EducationalUserCreationForm,
+                    UserChangeRequestForm)
+from .models import CustomUser, UserChangeRequest
+
 
 def home_page(request):
     cards = [
@@ -25,66 +34,67 @@ def home_page(request):
 def vender_landing(request):
     return render(request, 'user_management/vender_landing.html')
 
-
 def register_business_qualify(request):
     if request.method == 'POST':
         situation = request.POST.get('situation')
         if situation == 'formalized':
-            # Redireciona para a URL do formulário de criação de conta
             return redirect('user_management:register_business_create')
         elif situation == 'informal':
-            # Redireciona para uma página de placeholder para a consultoria
             return render(request, 'user_management/consultancy_placeholder.html')
         else:
-            # Caso o usuário não selecione nada e clique em "Continuar"
             return render(request, 'user_management/register_business_qualify.html', {'error': 'Por favor, selecione uma opção.'})
             
     return render(request, 'user_management/register_business_qualify.html')
 
-# VIEW RENOMEADA para o formulário de criação de conta
 def create_business_account(request):
     if request.method == 'POST':
         form = BusinessUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             
-            # Lógica de envio de e-mail
             try:
                 send_mail(
                     'Seu Código de Verificação - Roraima Trade Hub',
                     f'Olá! Seu código de verificação é: {user.verification_code}',
-                    'nao-responda@roraimatradehub.com', # Substitua pelo seu e-mail
+                    'nao-responda@roraimatradehub.com',
                     [user.email],
                     fail_silently=False,
                 )
                 messages.success(request, 'Conta pré-cadastrada! Enviamos um código de verificação para o seu e-mail.')
-                # Redireciona para a nova página de verificação (que criaremos a seguir)
                 return redirect(reverse('user_management:verify_email') + f'?email={user.email}')
             except Exception as e:
-                # Se o e-mail falhar, podemos avisar o usuário
                 messages.error(request, 'Houve um problema ao enviar o e-mail de verificação. Tente novamente.')
-                user.delete() # Remove o usuário pré-cadastrado para evitar lixo no banco
+                user.delete()
+                # Retorna para o formulário em branco em caso de falha no e-mail
+                return redirect('user_management:register_business_create')
+
+    # CORREÇÃO: A lógica foi ajustada aqui.
+    # Se o método NÃO for POST (ou seja, é o primeiro acesso)
+    # OU se o formulário do POST for inválido, ele chegará aqui.
     else:
         form = BusinessUserCreationForm()
     
+    # Renderiza a página com o formulário (seja ele em branco ou com os erros de validação)
     return render(request, 'user_management/register_business.html', {'form': form})
-# NOVA PÁGINA (em branco por enquanto)
+
 def consultancy_placeholder(request):
-    return render(request, 'base.html') # Apenas renderiza a base por enquanto
+    return render(request, 'base.html')
 
 def register_educational(request):
+    # ... (código existente, sem alterações) ...
     if request.method == 'POST':
         form = EducationalUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             messages.success(request, f'Conta criada com sucesso para {user.full_name}! Você já pode fazer o login.')
-            return redirect('user_management:login') # Redireciona para o login
+            return redirect('user_management:login')
     else:
         form = EducationalUserCreationForm()
     
     return render(request, 'user_management/register_educational.html', {'form': form})
 
 def verify_email(request):
+    # ... (código existente, sem alterações) ...
     email = request.GET.get('email') or request.POST.get('email')
     if not email:
         messages.error(request, 'E-mail não fornecido. Por favor, comece o cadastro novamente.')
@@ -108,11 +118,10 @@ def verify_email(request):
             messages.error(request, 'Código de verificação inválido.')
         elif timezone.now() > user.verification_code_expires_at:
             messages.error(request, 'Código de verificação expirado. Por favor, solicite um novo.')
-            # Aqui poderíamos adicionar a lógica para reenviar o código
         else:
             user.is_active = True
             user.email_verified = True
-            user.verification_code = None # Limpamos o código após o uso
+            user.verification_code = None
             user.verification_code_expires_at = None
             user.save()
             messages.success(request, 'E-mail verificado com sucesso! Sua conta está ativa e você já pode fazer login.')
@@ -122,20 +131,18 @@ def verify_email(request):
 
 @login_required
 def dashboard(request):
+    # ... (código existente, sem alterações) ...
     user = request.user
     if user.user_type == 'BUSINESS':
-        # Mantém o comportamento atual para usuários empresariais
         return render(request, 'user_management/dashboard.html')
     elif user.user_type == 'EDUCATIONAL':
-        # Redireciona para o novo painel educacional
         return redirect('learning_management:educational_dashboard')
     else:
-        # Você pode adicionar um comportamento padrão ou uma página de erro aqui
-        # Por enquanto, vamos redirecionar para a home
         return redirect('home')
 
 @login_required
 def user_profile(request):
+    # ... (código existente, sem alterações) ...
     user = request.user
     edit_mode = 'edit' in request.GET
 
