@@ -32,6 +32,9 @@ class CustomUser(AbstractUser):
         null=True,
         verbose_name='Escolaridade'
     )
+    email_verified = models.BooleanField(default=False, verbose_name='E-mail Verificado')
+    verification_code = models.CharField(max_length=6, blank=True, null=True, verbose_name='Código de Verificação')
+    verification_code_expires_at = models.DateTimeField(blank=True, null=True, verbose_name='Expiração do Código')
 
     def __str__(self):
         return self.username

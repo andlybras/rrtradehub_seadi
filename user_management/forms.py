@@ -1,30 +1,48 @@
 from django import forms
 from .models import CustomUser
+from django.utils import timezone
+from datetime import timedelta
+import random
 
 class BusinessUserCreationForm(forms.ModelForm):
     password = forms.CharField(label='Senha', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirmação de Senha', widget=forms.PasswordInput)
+    # NOVO CAMPO de confirmação de e-mail
+    email2 = forms.EmailField(label='Confirmação de E-mail')
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'razao_social', 'nome_fantasia', 'cnpj')
+        # ALTERAÇÃO: Removemos o CNPJ daqui.
+        fields = ('username', 'email', 'razao_social', 'nome_fantasia')
+
+    # NOVA FUNÇÃO para validar se os e-mails são iguais
+    def clean_email2(self):
+        cd = self.cleaned_data
+        if cd.get('email') and cd.get('email2') and cd['email'] != cd['email2']:
+            raise forms.ValidationError('Os e-mails não coincidem.')
+        return cd.get('email2')
 
     def clean_password2(self):
+        # ... (este método continua igual) ...
         cd = self.cleaned_data
         if cd.get('password') and cd.get('password2') and cd['password'] != cd['password2']:
             raise forms.ValidationError('As senhas não coincidem.')
         return cd.get('password2')
     
-    def clean_cnpj(self):
-        cnpj = self.cleaned_data.get('cnpj')
-        if CustomUser.objects.filter(cnpj=cnpj).exists():
-            raise forms.ValidationError("Um usuário com este CNPJ já existe.")
-        return cnpj
+    # O clean_cnpj não é mais necessário aqui, pois removemos o campo.
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
         user.user_type = CustomUser.UserType.BUSINESS
+        
+        # ALTERAÇÃO IMPORTANTE: O usuário começa inativo até verificar o e-mail.
+        user.is_active = False
+        
+        # Geramos o código de verificação
+        user.verification_code = str(random.randint(100000, 999999))
+        user.verification_code_expires_at = timezone.now() + timedelta(minutes=10) # Código expira em 10 minutos
+        
         if commit:
             user.save()
         return user

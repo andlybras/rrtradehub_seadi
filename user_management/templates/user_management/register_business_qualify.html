@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Qualificação de Perfil Empresarial{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-lg">
+    <h2 class="text-3xl font-bold text-center text-secondary mb-4 font-title">Qual é a situação atual do negócio?</h2>
+    <p class="text-center text-gray-600 mb-8">Para garantir a melhor experiência, precisamos entender o seu momento atual.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="space-y-4">
+            <label for="situation_formalized" class="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50 has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-colors">
+                <input type="radio" id="situation_formalized" name="situation" value="formalized" class="hidden">
+                <span class="font-bold text-lg text-secondary">Sou uma empresa formalizada com CNPJ ativo</span>
+                <p class="text-sm text-gray-600 mt-1">Já possuo CNPJ e quero cadastrar minha empresa para exportar.</p>
+            </label>
+
+            <label for="situation_informal" class="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50 has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-colors">
+                <input type="radio" id="situation_informal" name="situation" value="informal" class="hidden">
+                <span class="font-bold text-lg text-secondary">Sou um empreendedor/produtor ainda sem CNPJ</span>
+                <p class="text-sm text-gray-600 mt-1">Tenho interesse em formalizar meu negócio para participar da plataforma.</p>
+            </label>
+        </div>
+
+        {% if error %}
+            <p class="text-red-500 text-center mt-4">{{ error }}</p>
+        {% endif %}
+
+        <button type="submit" class="w-full mt-8 bg-accent text-secondary font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity">
+            Continuar
+        </button>
+    </form>
+</div>
+{% endblock %}

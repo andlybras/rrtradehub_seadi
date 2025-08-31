@@ -9,7 +9,6 @@
     <form method="POST" id="registrationForm" novalidate>
         {% csrf_token %}
 
-        <!-- Bloco para exibir erros gerais do formulário (ex: usuário já existe) -->
         {% if form.non_field_errors %}
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
                 {% for error in form.non_field_errors %}
@@ -19,13 +18,11 @@
         {% endif %}
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <!-- Razão Social -->
             <div>
                 <label for="id_razao_social" class="block mb-2 text-sm font-medium text-gray-700">Razão Social</label>
                 <input type="text" name="razao_social" id="id_razao_social" class="form-input {% if form.razao_social.errors %}is-invalid{% endif %}" required value="{{ form.razao_social.value|default:'' }}">
                 {% for error in form.razao_social.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
             </div>
-            <!-- Nome Fantasia -->
             <div>
                 <label for="id_nome_fantasia" class="block mb-2 text-sm font-medium text-gray-700">Nome Fantasia</label>
                 <input type="text" name="nome_fantasia" id="id_nome_fantasia" class="form-input {% if form.nome_fantasia.errors %}is-invalid{% endif %}" required value="{{ form.nome_fantasia.value|default:'' }}">
@@ -33,22 +30,12 @@
             </div>
         </div>
 
-        <!-- CNPJ -->
-        <div class="mb-6">
-            <label for="id_cnpj" class="block mb-2 text-sm font-medium text-gray-700">CNPJ</label>
-            <input type="text" name="cnpj" id="id_cnpj" class="form-input {% if form.cnpj.errors %}is-invalid{% endif %}" required placeholder="00.000.000/0000-00" value="{{ form.cnpj.value|default:'' }}">
-            <p id="cnpjError" class="error-message"></p>
-            {% for error in form.cnpj.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
-        </div>
-
-        <!-- Username -->
         <div class="mb-6">
             <label for="id_username" class="block mb-2 text-sm font-medium text-gray-700">Nome de Usuário</label>
             <input type="text" name="username" id="id_username" class="form-input {% if form.username.errors %}is-invalid{% endif %}" required value="{{ form.username.value|default:'' }}">
             {% for error in form.username.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
 
-        <!-- Email -->
         <div class="mb-6">
             <label for="id_email" class="block mb-2 text-sm font-medium text-gray-700">E-mail</label>
             <input type="email" name="email" id="id_email" class="form-input {% if form.email.errors %}is-invalid{% endif %}" required value="{{ form.email.value|default:'' }}">
@@ -56,7 +43,14 @@
             {% for error in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
 
-        <!-- Senha -->
+        <div class="mb-6">
+            <label for="id_email2" class="block mb-2 text-sm font-medium text-gray-700">Confirmação de E-mail</label>
+            <input type="email" name="email2" id="id_email2" class="form-input {% if form.email2.errors %}is-invalid{% endif %}" required value="{{ form.email2.value|default:'' }}">
+            <p id="emailConfirmError" class="error-message"></p>
+            {% for error in form.email2.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+        </div>
+
+
         <div class="mb-6">
             <label for="id_password1" class="block mb-2 text-sm font-medium text-gray-700">Senha</label>
             <div class="relative">
@@ -66,15 +60,14 @@
                 </span>
             </div>
             <div id="password-reqs" class="mt-2 text-xs space-y-1 text-gray-500">
-                <p id="req-length">8 ou mais caracteres</p>
-                <p id="req-letter">Letras (a-z, A-Z)</p>
-                <p id="req-number">Números (0-9)</p>
-                <p id="req-special">Caractere especial (!, @, #, etc.)</p>
+                <p id="req-length" class="req-item">8 ou mais caracteres</p>
+                <p id="req-letter" class="req-item">Letras (a-z, A-Z)</p>
+                <p id="req-number" class="req-item">Números (0-9)</p>
+                <p id="req-special" class="req-item">Caractere especial (!, @, #, etc.)</p>
             </div>
              {% for error in form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
         </div>
 
-        <!-- Confirmação de Senha -->
         <div class="mb-8">
             <label for="id_password2" class="block mb-2 text-sm font-medium text-gray-700">Confirme a Senha</label>
             <div class="relative">
@@ -138,9 +131,9 @@
     const fields = {
         razao_social: { el: document.getElementById('id_razao_social'), valid: false },
         nome_fantasia: { el: document.getElementById('id_nome_fantasia'), valid: false },
-        cnpj: { el: document.getElementById('id_cnpj'), valid: false, errorEl: document.getElementById('cnpjError') },
         username: { el: document.getElementById('id_username'), valid: false },
         email: { el: document.getElementById('id_email'), valid: false, errorEl: document.getElementById('emailError') },
+        email_confirm: { el: document.getElementById('id_email2'), valid: false, errorEl: document.getElementById('emailConfirmError') },
         password: { el: document.getElementById('id_password1'), valid: false },
         password_confirm: { el: document.getElementById('id_password2'), valid: false, errorEl: document.getElementById('confirmError') }
     };
@@ -188,22 +181,21 @@
         });
     });
 
-    fields.cnpj.el.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
-        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
-        value = value.replace(/(\d{4})(\d)/, '$1-$2');
-        e.target.value = value.slice(0, 18);
-        
-        const isValid = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(e.target.value);
-        setFieldState(fields.cnpj, isValid, 'Formato de CNPJ inválido.');
-    });
+    function validateEmailConfirm() {
+        const emailValue = fields.email.el.value;
+        const confirmValue = fields.email_confirm.el.value;
+        const isValid = emailValue === confirmValue && confirmValue !== '';
+        setFieldState(fields.email_confirm, isValid, 'Os e-mails não coincidem.');
+    }
 
     fields.email.el.addEventListener('input', (e) => {
         const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value);
         setFieldState(fields.email, isValid, 'Por favor, insira um e-mail válido.');
+        validateEmailConfirm();
     });
+
+    fields.email_confirm.el.addEventListener('input', validateEmailConfirm);
+
 
     fields.password.el.addEventListener('input', (e) => {
         const value = e.target.value;
